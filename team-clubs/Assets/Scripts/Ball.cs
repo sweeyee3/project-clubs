@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class Ball : MonoBehaviour
 {
@@ -117,6 +119,7 @@ public class Ball : MonoBehaviour
         m_line = new List<GameObject>();
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {       
         // calculate speed based on angle
@@ -157,6 +160,7 @@ public class Ball : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(m_initialPosition, (m_initialPosition + (initialVel)));            
     }
+#endif
 
     private void Update()
     {        
@@ -187,6 +191,7 @@ public class Ball : MonoBehaviour
 
                 switch (touch.phase)
                 {
+                    case TouchPhase.Stationary:
                     case TouchPhase.Began:
                         m_touchStartPos = touch.position;
                         break;
@@ -194,17 +199,19 @@ public class Ball : MonoBehaviour
                         m_touchCurrentPos = touch.position;
                         
                         // move horizontal axis
-                        var normalizedDeltaX = Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x);
-                        
-                        m_horizontalAngle = Mathf.Clamp(m_horizontalAngle + (normalizedDeltaX * 0.5f), 0, 1);
-                        
-                        // move vertical axis
-                        var normalizedDeltaY = Mathf.InverseLerp(0, Screen.height, m_touchStartPos.y) - Mathf.InverseLerp(0, Screen.height, m_touchCurrentPos.y);
-                        //m_verticalAngle = Mathf.Clamp(m_verticalAngle + (normalizedDeltaY * 1.25f), 0, 1);
+                        var normalizedDeltaX = Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x);                        
+                        // move vertical axis                        
+                        var normalizedDeltaY = Mathf.Abs(Mathf.InverseLerp(0, Screen.height, m_touchStartPos.y) - Mathf.InverseLerp(0, Screen.height, m_touchCurrentPos.y));
 
-                        Debug.Log(normalizedDeltaY);
+                        //normalizedDeltaX *= 0.75f;
+                        normalizedDeltaY = -Mathf.Sign(touch.deltaPosition.y) * normalizedDeltaY;
 
-                        break;
+                        Debug.Log(normalizedDeltaX);
+
+                        if(Mathf.Abs(normalizedDeltaX) > 0.005f) m_horizontalAngle = Mathf.Clamp(m_horizontalAngle - normalizedDeltaX, 0, 1);
+                        //m_verticalAngle = Mathf.Clamp(m_verticalAngle + normalizedDeltaY, 0, 1);
+
+                        break;                    
                     case TouchPhase.Ended:
                         if (m_moveRoutine != null) StopCoroutine(m_moveRoutine);
                         m_moveRoutine = StartCoroutine(MoveBall());

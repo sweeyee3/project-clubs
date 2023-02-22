@@ -96,6 +96,7 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         var size = new Vector3(m_spawnWidth, m_spawnHeight, m_spawnLength);
@@ -126,7 +127,7 @@ public class SpawnManager : MonoBehaviour
             }
         }
     }
-
+#endif
     private void Update()
     {
         if (Input.GetKeyUp(KeyCode.R))
