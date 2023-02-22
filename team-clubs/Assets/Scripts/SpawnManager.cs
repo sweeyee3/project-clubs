@@ -18,7 +18,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private Vector3 m_cellSize;
 
     [SerializeField] private Ball m_ball;
-    [SerializeField] private List<GameObject> m_hoopPrefabs;
+    [SerializeField] public List<GameObject> m_hoopPrefabs;
 
     [Header("Debug Settings")]
     [SerializeField] private bool m_isDisplaySpawnGrid = true;
@@ -187,7 +187,7 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    Vector3 GetCellCounts()
+    public Vector3 GetCellCounts()
     {
         var size = new Vector3(m_spawnWidth, m_spawnHeight, m_spawnLength);
 
@@ -209,7 +209,7 @@ public class SpawnManager : MonoBehaviour
         return m_ball.InitialPosition + m_offset + m_cellSize / 2 - (new Vector3(m_cellSize.x * (nx / 2), m_cellSize.y * (ny / 2), 0));
     }
     
-    Vector3 GetCellPosition(int x, int y, int z)
+    public Vector3 GetCellPosition(int x, int y, int z)
     {                   
         return GetStartPosition() + new Vector3(m_cellSize.x * x, m_cellSize.y * y, m_cellSize.z * z);
     }
