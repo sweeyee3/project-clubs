@@ -8,6 +8,7 @@ using UnityEditor;
 public class Ball : MonoBehaviour
 {
     [Header("Mobile Control Settings")]
+    [SerializeField] private Camera m_camera;
     [SerializeField] private Vector3 m_swipeRange = new Vector3(2, 2, 0);
 
     [Header("Keyboard / Mouse Settings")]
@@ -54,6 +55,7 @@ public class Ball : MonoBehaviour
 
     private Vector3 m_touchStartPos;
     private Vector3 m_touchCurrentPos;
+    private bool m_isTapped;
 
     private List<GameObject> m_line;
 
@@ -193,27 +195,43 @@ public class Ball : MonoBehaviour
                 {
                     case TouchPhase.Stationary:
                     case TouchPhase.Began:
-                        m_touchStartPos = touch.position;
+                        RaycastHit info;
+                        Debug.Log(m_isTapped);
+                        if (!m_isTapped && Physics.Raycast(m_camera.ScreenPointToRay(touch.position), out info, 999, 1 << LayerMask.NameToLayer("BallTap")))
+                        {
+                            m_touchStartPos = touch.position;
+                            m_isTapped = true;
+                            Debug.Log("tapped: " + info.collider.transform.parent.name);
+                        }
+
                         break;
                     case TouchPhase.Moved:
-                        m_touchCurrentPos = touch.position;
-                        
-                        // move horizontal axis
-                        var normalizedDeltaX = Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x);                        
-                        // move vertical axis                        
-                        var normalizedDeltaY = Mathf.Abs(Mathf.InverseLerp(0, Screen.height, m_touchStartPos.y) - Mathf.InverseLerp(0, Screen.height, m_touchCurrentPos.y));
+                        if (m_isTapped)
+                        {
+                            m_touchCurrentPos = touch.position;
 
-                        //normalizedDeltaX *= 0.75f;
-                        normalizedDeltaY = -Mathf.Sign(touch.deltaPosition.y) * normalizedDeltaY;
+                            // TODO: smooth dx2 and dy2
 
-                        Debug.Log(normalizedDeltaX);
+                            // move horizontal axis
 
-                        if(Mathf.Abs(normalizedDeltaX) > 0.005f) m_horizontalAngle = Mathf.Clamp(m_horizontalAngle - normalizedDeltaX, 0, 1);
-                        //m_verticalAngle = Mathf.Clamp(m_verticalAngle + normalizedDeltaY, 0, 1);
+                            var dx1 = Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x);
+                            var dx2 = Mathf.InverseLerp(-0.25f, 0.25f, dx1);
+                            m_horizontalAngle = dx2;
+
+                            // move vertical axis
+                            Debug.Log(m_touchCurrentPos.y);
+                            var dy1 = Mathf.InverseLerp(m_touchStartPos.y, 0, m_touchCurrentPos.y);
+                            var dy2 = Mathf.InverseLerp(0, 0.5f, dy1);
+                            m_verticalAngle = dy2;                            
+                        }
 
                         break;                    
                     case TouchPhase.Ended:
-                        m_isMove = true;                        
+                        if (m_isTapped)
+                        {
+                            m_isMove = true;
+                            m_isTapped = false;
+                        }
                         break;
                 }
             }
