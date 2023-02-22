@@ -131,11 +131,7 @@ public class SpawnManager : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.R))
         {
-            foreach (var hoop in m_hoopInstances)
-            {
-                Destroy(hoop.transform.parent.gameObject);
-            }
-            m_hoopInstances.Clear();
+            Reset();
         }
 
         if (m_hoopInstances.Count <= 0)
@@ -176,6 +172,18 @@ public class SpawnManager : MonoBehaviour
         m_cellIndices.Add(hoop.HoopGridIndex);
         m_hoopInstances.Remove(hoop);
         Destroy(hoop.transform.parent.gameObject);
+    }
+
+    public void Reset()
+    {
+        if (m_hoopInstances != null)
+        {
+            foreach (var hoop in m_hoopInstances)
+            {
+                Destroy(hoop.transform.parent.gameObject);
+            }
+            m_hoopInstances.Clear();
+        }
     }
 
     Vector3 GetCellCounts()

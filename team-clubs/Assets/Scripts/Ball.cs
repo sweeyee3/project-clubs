@@ -5,7 +5,10 @@ using UnityEditor;
 
 public class Ball : MonoBehaviour
 {
-    [Header("Control Settings")]
+    [Header("Mobile Control Settings")]
+    [SerializeField] private Vector3 m_swipeRange = new Vector3(2, 2, 0);
+
+    [Header("Keyboard / Mouse Settings")]
     [SerializeField] private float m_verticalAngleSpeed = 0.01f;
     [SerializeField] private float m_horizontalAngleSpeed = 0.01f;
 
@@ -45,6 +48,10 @@ public class Ball : MonoBehaviour
     [SerializeField] private float m_totalBallTime; 
 
     [SerializeField] private Vector3 m_throwUp = new Vector3(0, 1, 0);
+
+
+    private Vector3 m_touchStartPos;
+    private Vector3 m_touchCurrentPos;
 
     private List<GameObject> m_line;
 
@@ -152,22 +159,7 @@ public class Ball : MonoBehaviour
     }
 
     private void Update()
-    {
-        #if UNITY_STANDALONE_WIN
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            // store position
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-
-        }
-
-#elif UNITY_ANDROID
-
-#endif        
+    {        
         if (Input.GetKeyUp(KeyCode.R))
         {
             Reset();
@@ -175,6 +167,53 @@ public class Ball : MonoBehaviour
 
         if ( m_moveRoutine == null && GameManager.Instance.CurrentGameState == GameManager.EGameState.GAME )
         {
+            #if UNITY_STANDALONE_WIN
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                // store position
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+
+            }
+
+            #elif UNITY_ANDROID
+
+            if (Input.touchCount > 0)
+            {
+                Touch touch = Input.GetTouch(0);
+
+                switch (touch.phase)
+                {
+                    case TouchPhase.Began:
+                        m_touchStartPos = touch.position;
+                        break;
+                    case TouchPhase.Moved:
+                        m_touchCurrentPos = touch.position;
+                        
+                        // move horizontal axis
+                        var normalizedDeltaX = Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x);
+                        
+                        m_horizontalAngle = Mathf.Clamp(m_horizontalAngle + (normalizedDeltaX * 0.5f), 0, 1);
+                        
+                        // move vertical axis
+                        var normalizedDeltaY = Mathf.InverseLerp(0, Screen.height, m_touchStartPos.y) - Mathf.InverseLerp(0, Screen.height, m_touchCurrentPos.y);
+                        //m_verticalAngle = Mathf.Clamp(m_verticalAngle + (normalizedDeltaY * 1.25f), 0, 1);
+
+                        Debug.Log(normalizedDeltaY);
+
+                        break;
+                    case TouchPhase.Ended:
+                        if (m_moveRoutine != null) StopCoroutine(m_moveRoutine);
+                        m_moveRoutine = StartCoroutine(MoveBall());
+                        break;
+                }
+            }
+
+            #endif
+
             if (Input.GetKey(KeyCode.Space))
             {
                 var totalVertAngleTime = 1 / m_verticalAngleSpeed;
