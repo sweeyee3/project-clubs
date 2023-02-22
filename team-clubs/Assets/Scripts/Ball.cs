@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class Ball : MonoBehaviour
 {
@@ -110,15 +112,16 @@ public class Ball : MonoBehaviour
         }
     }
 
-    Coroutine m_moveRoutine;
+    bool m_isMove;
 
     private void Awake()
     {
         m_line = new List<GameObject>();
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
-    {       
+    {        
         // calculate speed based on angle
         var initialVel = InitialVelocity;
 
@@ -142,7 +145,7 @@ public class Ball : MonoBehaviour
             tempTime += m_debugIntervalTime;
             t -= m_debugIntervalTime;
         }
-
+        
         transform.position = m_initialPosition;
         m_debugAccumTime = 0;
 
@@ -153,10 +156,10 @@ public class Ball : MonoBehaviour
 
             m_debugAccumTime += m_debugIntervalTime;
         }        
-
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(m_initialPosition, (m_initialPosition + (initialVel)));            
+        Gizmos.DrawLine(m_initialPosition, (m_initialPosition + (initialVel)));                    
     }
+#endif
 
     private void Update()
     {        
@@ -164,8 +167,9 @@ public class Ball : MonoBehaviour
         {
             Reset();
         }
-
-        if ( m_moveRoutine == null && GameManager.Instance.CurrentGameState == GameManager.EGameState.GAME )
+        
+        if (!m_isMove && GameManager.Instance.CurrentGameState == GameManager.EGameState.GAME)
+            //if ( m_moveRoutine == null && GameManager.Instance.CurrentGameState == GameManager.EGameState.GAME )
         {
             #if UNITY_STANDALONE_WIN
 
@@ -187,6 +191,7 @@ public class Ball : MonoBehaviour
 
                 switch (touch.phase)
                 {
+                    case TouchPhase.Stationary:
                     case TouchPhase.Began:
                         m_touchStartPos = touch.position;
                         break;
@@ -194,20 +199,21 @@ public class Ball : MonoBehaviour
                         m_touchCurrentPos = touch.position;
                         
                         // move horizontal axis
-                        var normalizedDeltaX = Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x);
-                        
-                        m_horizontalAngle = Mathf.Clamp(m_horizontalAngle + (normalizedDeltaX * 0.5f), 0, 1);
-                        
-                        // move vertical axis
-                        var normalizedDeltaY = Mathf.InverseLerp(0, Screen.height, m_touchStartPos.y) - Mathf.InverseLerp(0, Screen.height, m_touchCurrentPos.y);
-                        //m_verticalAngle = Mathf.Clamp(m_verticalAngle + (normalizedDeltaY * 1.25f), 0, 1);
+                        var normalizedDeltaX = Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x);                        
+                        // move vertical axis                        
+                        var normalizedDeltaY = Mathf.Abs(Mathf.InverseLerp(0, Screen.height, m_touchStartPos.y) - Mathf.InverseLerp(0, Screen.height, m_touchCurrentPos.y));
 
-                        Debug.Log(normalizedDeltaY);
+                        //normalizedDeltaX *= 0.75f;
+                        normalizedDeltaY = -Mathf.Sign(touch.deltaPosition.y) * normalizedDeltaY;
 
-                        break;
+                        Debug.Log(normalizedDeltaX);
+
+                        if(Mathf.Abs(normalizedDeltaX) > 0.005f) m_horizontalAngle = Mathf.Clamp(m_horizontalAngle - normalizedDeltaX, 0, 1);
+                        //m_verticalAngle = Mathf.Clamp(m_verticalAngle + normalizedDeltaY, 0, 1);
+
+                        break;                    
                     case TouchPhase.Ended:
-                        if (m_moveRoutine != null) StopCoroutine(m_moveRoutine);
-                        m_moveRoutine = StartCoroutine(MoveBall());
+                        m_isMove = true;                        
                         break;
                 }
             }
@@ -225,8 +231,7 @@ public class Ball : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.Space))
             {
                 // release ball
-                if (m_moveRoutine != null) StopCoroutine(m_moveRoutine);
-                m_moveRoutine = StartCoroutine(MoveBall());            
+                m_isMove = true;                           
             }
 
             if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
@@ -245,17 +250,38 @@ public class Ball : MonoBehaviour
             }               
         }
 
+        if (m_isMove)
+        {
+            var initialVel = InitialVelocity;
+
+            var vf = GetVelocity(initialVel, m_gravity, new Vector3(0, -m_ballHeight, m_ballDistance));
+            var tx = GetTime(initialVel.z, vf.z, m_ballDistance);
+            var ty = GetTime(initialVel.y, vf.y, m_ballHeight);
+
+            var t = tx;
+
+            m_totalBallTime = t;
+
+            transform.position = m_initialPosition;
+            var debugAccumTime = 0.0f;
+
+            while (debugAccumTime < m_accmulatedBallTime)
+            {
+                var vel = GetVelocity(initialVel, m_gravity, debugAccumTime);
+                transform.position = transform.position + vel;
+
+                debugAccumTime += m_debugIntervalTime;
+            }
+            m_accmulatedBallTime += (Time.deltaTime);
+        }
+
         RenderLine();
     }
 
     public void Reset()
     {
-        transform.position = m_initialPosition;
-        if (m_moveRoutine != null)
-        {
-            StopCoroutine(m_moveRoutine);
-            m_moveRoutine = null;
-        }
+        transform.position = m_initialPosition;        
+        m_isMove = false;
 
         m_accmulatedBallTime = 0;
         m_accumulatedVertAngleTime = 0;
@@ -358,27 +384,5 @@ public class Ball : MonoBehaviour
         var vz = uz + az * t;
 
         return isZ ? new Vector3(vz, vy, vx) : new Vector3(vx, vy, vz);
-    }
-    
-    IEnumerator MoveBall()
-    {
-        var initialVel = InitialVelocity;
-
-        var vf = GetVelocity(initialVel, m_gravity, new Vector3(0, -m_ballHeight, m_ballDistance));
-        var tx = GetTime(initialVel.z, vf.z, m_ballDistance);
-        var ty = GetTime(initialVel.y, vf.y, m_ballHeight);
-
-        var t = tx;
-
-        m_totalBallTime = t;        
-
-        while (m_accmulatedBallTime < m_totalBallTime)
-        {
-            var intermediateVelocity = GetVelocity(initialVel, m_gravity, m_accmulatedBallTime);
-            transform.Translate(intermediateVelocity);
-            
-            m_accmulatedBallTime += (Time.deltaTime);
-            yield return null;
-        }        
-    }
+    }       
 }

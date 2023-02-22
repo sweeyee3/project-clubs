@@ -1675,6 +1675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c76d0a599a7d021418af89d7b38ac5dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_swipeRange: {x: 2, y: 2, z: 0}
   m_verticalAngleSpeed: 2
   m_horizontalAngleSpeed: 0.75
   m_speedThrottleFactor: 0.945
@@ -1714,7 +1715,7 @@ MonoBehaviour:
   m_horizontalAngleRange: {x: 0.25, y: 0.85}
   m_horizontalAngle: 0.5
   m_verticalAngleRange: {x: 0.15, y: 0.9}
-  m_verticalAngle: 0
+  m_verticalAngle: 0.363
   m_gravity: {x: 0, y: -3, z: 0}
   m_initialPosition: {x: 0, y: -2, z: -4.25}
   m_lineDotInterval: 0.01
@@ -1728,7 +1729,7 @@ MonoBehaviour:
   m_accmulatedBallTime: 0
   m_accumulatedVertAngleTime: 0
   m_accumulatedHorizontalAngleTime: 0
-  m_totalBallTime: 61.92296
+  m_totalBallTime: 64.96844
   m_throwUp: {x: 0, y: 1, z: 0}
 --- !u!1 &1409343677
 GameObject:
@@ -2482,6 +2483,7 @@ MonoBehaviour:
   m_ball: {fileID: 1404332604}
   m_hoopPrefabs:
   - {fileID: 3248292207736956314, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
+  - {fileID: 3248292207736956314, guid: 551b5e4edc370a3429d6e5565d4f924f, type: 3}
   m_isDisplaySpawnGrid: 1
 --- !u!1 &1842198660
 GameObject:

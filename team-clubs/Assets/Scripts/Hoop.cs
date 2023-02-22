@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class Hoop : MonoBehaviour
 {
@@ -72,6 +74,7 @@ public class Hoop : MonoBehaviour
         }        
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         var collided = Physics.OverlapBox(transform.position + m_boxOffset, m_boxSize / 2);
@@ -89,6 +92,7 @@ public class Hoop : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(transform.position + m_boxOffset, m_boxSize);
     }
+#endif
 
     private bool IsInsideCylinderRadius(Vector3 self, Vector3 other, Vector3 normal, float radius)
     {
@@ -140,6 +144,7 @@ public class Hoop : MonoBehaviour
         return widthRange;
     }
 
+#if UNITY_EDITOR
     private void DrawCylinderTrigger(GameObject o)
     {
         Vector3 norm = transform.up;
@@ -206,4 +211,5 @@ public class Hoop : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + (norm * 2));
     }
+#endif
 }
