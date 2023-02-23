@@ -17,7 +17,7 @@ public class SpawnManager : MonoBehaviour
     [Header("Grid Settings")]
     [SerializeField] private Vector3 m_cellSize;
 
-    [SerializeField] private Ball m_ball;
+    [SerializeField] private CurveHandler m_ball;
     [SerializeField] public List<GameObject> m_hoopPrefabs;
 
     [Header("Debug Settings")]
@@ -58,43 +58,7 @@ public class SpawnManager : MonoBehaviour
                 }
             }
         }
-    }
-
-    Vector3 MaxSpawnBound
-    {
-        get
-        {
-            // TODO: find the maximum  range given most expanded velocity
-
-            var vLargest = m_ball.GetTargetCalculatedVelocity(0.5f, 0.5f);            
-
-            var u = m_ball.GetVelocity(vLargest, m_ball.Gravity, new Vector3(0, -m_ball.BallHeight, m_ball.BallDistance));
-            var t = m_ball.GetTime(u.z, u.z, m_ball.BallDistance);                                   
-
-            var sz = (u.z*t) + (0.5f*m_ball.Gravity.z*Mathf.Pow(t, 2));
-            var sx = m_spawnWidth;            
-
-            return new Vector3(m_ball.InitialPosition.x + sx, 0, m_ball.transform.position.z + sz);
-        }
-    }
-
-    Vector3 MinSpawnBound
-    {
-        get
-        {
-            // TODO: find the minimum range given most retracted velocity
-
-            var vSmallest = m_ball.GetTargetCalculatedVelocity(0.5f, 1);
-
-            var u = m_ball.GetVelocity(vSmallest, m_ball.Gravity, new Vector3(0, -m_ball.BallHeight, m_ball.BallDistance));
-            var t = m_ball.GetTime(u.z, u.z, m_ball.BallDistance);
-
-            var sz = (u.z * t) + (0.5f * m_ball.Gravity.z * Mathf.Pow(t, 2));
-            var sx = 0;            
-
-            return new Vector3(m_ball.InitialPosition.x + sx, 0, m_ball.transform.position.z + sz);            
-        }
-    }
+    }   
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

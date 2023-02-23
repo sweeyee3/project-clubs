@@ -25,7 +25,7 @@ public class ResetCollider : MonoBehaviour
         {
             if (collide.tag == "Ball")
             {
-                collide.GetComponentInParent<Ball>().Reset();
+                collide.GetComponentInParent<CurveHandler>().Reset();
             }
         }
     }    

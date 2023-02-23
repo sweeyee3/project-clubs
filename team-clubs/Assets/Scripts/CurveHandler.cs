@@ -5,29 +5,33 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public class Ball : MonoBehaviour
+public class CurveHandler : MonoBehaviour
 {
     [Header("Mobile Control Settings")]
-    [SerializeField] private Camera m_camera;
-    [SerializeField] private Vector3 m_swipeRange = new Vector3(2, 2, 0);
+    [SerializeField] private Camera m_camera;   
 
     [Header("Keyboard / Mouse Settings")]
-    [SerializeField] private float m_verticalAngleSpeed = 0.01f;
-    [SerializeField] private float m_horizontalAngleSpeed = 0.01f;
+    [Tooltip("Distance refers to the x-direction distance of projectile motion")] [SerializeField] private float m_distanceAdjustmentSpeed = 0.01f;
+    [Tooltip("Forward refers to the x-direction vector of projectile motion")] [SerializeField] private float m_forwardAdjustmentSpeed = 0.01f;
 
-    [Header("Ball Settings")]
-    [SerializeField][Range(0, 1)] private float m_speedThrottleFactor;
+    [Header("Curve Settings")]
+    [SerializeField] private AnimationCurve m_distanceCurve;
     [SerializeField] private AnimationCurve m_speedCurve;
 
-    [SerializeField] private Vector2 m_horizontalAngleRange = new Vector2(0.1f, 0.9f);
-    [SerializeField] [Range(0, 1)] private float m_horizontalAngle = 0;
+    [Tooltip("Forward refers to the x-direction vector of projectile motion")] [SerializeField] private Vector2 m_forwardAdjustmentRange = new Vector2(0.1f, 0.9f);
+    [Tooltip("Forward refers to the x-direction vector of projectile motion")] [SerializeField] [Range(0, 1)] private float m_forwardAdjustment = 0;
 
-    [SerializeField] private Vector2 m_verticalAngleRange = new Vector2(0.1f, 0.9f);
-    [SerializeField][Range(0, 1)] private float m_verticalAngle = 0;        
+    [Tooltip("Distance refers to the forward distance of projectile motion")] [SerializeField] private Vector2 m_normalizedDistanceAdjustmentRange = new Vector2(0.1f, 0.9f);
+    [Tooltip("Distance refers to the forward distance of projectile motion")] [SerializeField] [Range(0, 1)] private float m_normalizedDistanceAdjustment = 0;
 
-    [SerializeField] private Vector3 m_gravity = new Vector3(0, -5, 0);
+    [SerializeField][Range(0, 1)] private float m_distanceRange = 0.5f;
+    [SerializeField] [Range(0, 5)] private float m_xVelRange = 0.5f;
 
-    [SerializeField] private Vector3 m_initialPosition = Vector3.zero;
+    [SerializeField] private Vector3 m_gravity = new Vector3(0, -0.01f, 0);
+
+    [Header("Ball settings")]
+    [SerializeField] private GameObject m_ball;
+    [SerializeField] private Vector3 m_initialBallPosition = Vector3.zero;
 
     [Header("Line settings")]
     [SerializeField] private float m_lineDotInterval = 0.5f;
@@ -39,19 +43,12 @@ public class Ball : MonoBehaviour
     [SerializeField] private float m_debugIntervalTime = 0.01f;
     [SerializeField] private float m_debugAccumTime = 0.0f;
 
-    [Header("Fixed Settings")]
-    [SerializeField] private float m_ballDistance = 1;
-    [SerializeField] private float m_ballHeight = 1;
-
-    [Header("Calculated Settings")]            
-    [SerializeField] private float m_accmulatedBallTime = 0;
-    [SerializeField] private float m_accumulatedVertAngleTime = 0;
-    [SerializeField] private float m_accumulatedHorizontalAngleTime = 0;
-
-    [SerializeField] private float m_totalBallTime; 
-
+    [Header("Fixed Settings")]    
     [SerializeField] private Vector3 m_throwUp = new Vector3(0, 1, 0);
 
+    [Header("Calculated Settings")]    
+    [SerializeField] private float m_accmulatedBallTime = 0;
+    [SerializeField] private float m_accumulatedVertAngleTime = 0;             
 
     private Vector3 m_touchStartPos;
     private Vector3 m_touchCurrentPos;
@@ -63,22 +60,39 @@ public class Ball : MonoBehaviour
     {
         get
         {
-            return m_initialPosition;
+            return m_initialBallPosition;
         }
     }
-
+    
     public Vector3 InitialVelocity
     {
         get
         {
-            var horizontalAngle = Mathf.Lerp(m_horizontalAngleRange.x, Mathf.Clamp(m_horizontalAngleRange.y, m_horizontalAngleRange.x, m_horizontalAngleRange.y), m_horizontalAngle);
-            var forward = -Vector3.Slerp(Vector3.right, -Vector3.right, horizontalAngle).normalized;
+            var range = EvaluateCurveValue(m_distanceCurve, m_distanceRange, m_normalizedDistanceAdjustmentRange.x, m_normalizedDistanceAdjustmentRange.y, m_normalizedDistanceAdjustment);
+            var velocity = EvaluateCurveValue(m_speedCurve, m_xVelRange, m_normalizedDistanceAdjustmentRange.x, m_normalizedDistanceAdjustmentRange.y, m_normalizedDistanceAdjustment);
+            var time = GetTime(velocity, range);            
 
-            // calculate initial velocity given speed and angle instead
-            var verticalAngle = Mathf.Lerp(m_verticalAngleRange.x, Mathf.Clamp(m_verticalAngleRange.y, m_verticalAngleRange.x, m_verticalAngleRange.y), m_verticalAngle);
-            var v = Vector3.Slerp(forward, m_throwUp, verticalAngle);
+            var s = new Vector3(0, 0, range);
+            var a = m_gravity;
+            var t = time;
+            var isZ = true;
 
-            return v * m_speedCurve.Evaluate(verticalAngle);
+            var sx = isZ ? s.z : s.x;
+            var ax = isZ ? a.z : a.x;
+
+            var sy = s.y;
+            var ay = a.y;
+
+            var sz = isZ ? s.x : s.z;
+            var az = isZ ? a.x : a.z;
+
+            float vx = (sx - 0.5f * ax * Mathf.Pow(t, 2)) / t;
+            float vy = (sy - 0.5f * ay * Mathf.Pow(t, 2)) / t;
+            float vz = (sz - 0.5f * az * Mathf.Pow(t, 2)) / t;
+
+            return isZ ? new Vector3(vz, vy, vx) : new Vector3(vx, vy, vz);
+
+            //return m_initialVelocity;
         }
     }
 
@@ -96,23 +110,7 @@ public class Ball : MonoBehaviour
         {
             return m_gravity;
         }
-    }
-
-    public float BallHeight
-    {
-        get
-        {
-            return m_ballHeight;
-        }
-    }
-
-    public float BallDistance
-    {
-        get
-        {
-            return m_ballDistance;
-        }
-    }
+    }    
 
     bool m_isMove;
 
@@ -123,23 +121,16 @@ public class Ball : MonoBehaviour
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
-    {        
-        // calculate speed based on angle
-        var initialVel = InitialVelocity;
-
-        var vf = GetVelocity(initialVel, m_gravity, new Vector3(0, -m_ballHeight, m_ballDistance));        
-        var tx = GetTime(initialVel.z, vf.z, m_ballDistance);
-        //var ty = GetTime(m_initialVelocity.y, vf.y, m_ballHeight);       
-
-        var t = tx;
-
-        m_totalBallTime = t;        
-
-        var tempPos = m_initialPosition;
+    {                                                                          
+        var tempPos = transform.position;
         var tempTime = 0.0f;
+        var dist = EvaluateCurveValue(m_distanceCurve, m_distanceRange, m_normalizedDistanceAdjustmentRange.x, m_normalizedDistanceAdjustmentRange.y, m_normalizedDistanceAdjustment);
+        var velocity = EvaluateCurveValue(m_speedCurve, m_xVelRange, m_normalizedDistanceAdjustmentRange.x, m_normalizedDistanceAdjustmentRange.y, m_normalizedDistanceAdjustment);
+        var t = GetTime(velocity, dist);
+
         while (t > 0)
         {
-            var intermediateVelocity = GetVelocity(initialVel, m_gravity, tempTime);
+            var intermediateVelocity = GetVelocity(InitialVelocity, m_gravity, tempTime);
             Gizmos.color = Color.magenta;
             Gizmos.DrawLine(tempPos, tempPos + intermediateVelocity);
 
@@ -148,18 +139,18 @@ public class Ball : MonoBehaviour
             t -= m_debugIntervalTime;
         }
         
-        transform.position = m_initialPosition;
+        m_ball.transform.position = m_initialBallPosition;
         m_debugAccumTime = 0;
 
         while (m_debugAccumTime < m_accmulatedBallTime)
         {
-            var vel = GetVelocity(initialVel, m_gravity, m_debugAccumTime);
-            transform.position = transform.position + vel;
+            var vel = GetVelocity(InitialVelocity, m_gravity, m_debugAccumTime);
+            m_ball.transform.position = m_ball.transform.position + vel;
 
             m_debugAccumTime += m_debugIntervalTime;
-        }        
+        }
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(m_initialPosition, (m_initialPosition + (initialVel)));                    
+        Gizmos.DrawLine(m_initialBallPosition, (m_initialBallPosition + (InitialVelocity)));                    
     }
 #endif
 
@@ -200,8 +191,7 @@ public class Ball : MonoBehaviour
                         if (!m_isTapped && Physics.Raycast(m_camera.ScreenPointToRay(touch.position), out info, 999, 1 << LayerMask.NameToLayer("BallTap")))
                         {
                             m_touchStartPos = touch.position;
-                            m_isTapped = true;
-                            Debug.Log("tapped: " + info.collider.transform.parent.name);
+                            m_isTapped = true;                            
                         }
 
                         break;
@@ -216,13 +206,12 @@ public class Ball : MonoBehaviour
 
                             var dx1 = Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x);
                             var dx2 = Mathf.InverseLerp(-0.25f, 0.25f, dx1);
-                            m_horizontalAngle = dx2;
+                            m_forwardAdjustment = dx2;
 
-                            // move vertical axis
-                            Debug.Log(m_touchCurrentPos.y);
+                            // move vertical axis                            
                             var dy1 = Mathf.InverseLerp(m_touchStartPos.y, 0, m_touchCurrentPos.y);
                             var dy2 = Mathf.InverseLerp(0, 0.5f, dy1);
-                            m_verticalAngle = dy2;                            
+                            m_normalizedDistanceAdjustment = dy2;                            
                         }
 
                         break;                    
@@ -240,10 +229,10 @@ public class Ball : MonoBehaviour
 
             if (Input.GetKey(KeyCode.Space))
             {
-                var totalVertAngleTime = 1 / m_verticalAngleSpeed;
+                var totalVertAngleTime = 1 / m_distanceAdjustmentSpeed;
                 m_accumulatedVertAngleTime += Time.deltaTime;
 
-                m_verticalAngle = Mathf.Lerp(0, 1, m_accumulatedVertAngleTime / totalVertAngleTime);
+                m_normalizedDistanceAdjustment = Mathf.Lerp(0, 1, m_accumulatedVertAngleTime / totalVertAngleTime);
             }
 
             if (Input.GetKeyUp(KeyCode.Space))
@@ -254,39 +243,29 @@ public class Ball : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
             {
-                m_accumulatedHorizontalAngleTime = 0;
+                
             }
 
             if (Input.GetKey(KeyCode.LeftArrow))
             {            
-                m_horizontalAngle = Mathf.Clamp(m_horizontalAngle - m_horizontalAngleSpeed * Time.deltaTime, 0, 1);
+                m_forwardAdjustment = Mathf.Clamp(m_forwardAdjustment - m_forwardAdjustmentSpeed * Time.deltaTime, 0, 1);
             }
 
             if (Input.GetKey(KeyCode.RightArrow))
             {            
-                m_horizontalAngle = Mathf.Clamp(m_horizontalAngle + m_horizontalAngleSpeed * Time.deltaTime, 0, 1);
+                m_forwardAdjustment = Mathf.Clamp(m_forwardAdjustment + m_forwardAdjustmentSpeed * Time.deltaTime, 0, 1);
             }               
         }
 
         if (m_isMove)
         {
-            var initialVel = InitialVelocity;
-
-            var vf = GetVelocity(initialVel, m_gravity, new Vector3(0, -m_ballHeight, m_ballDistance));
-            var tx = GetTime(initialVel.z, vf.z, m_ballDistance);
-            var ty = GetTime(initialVel.y, vf.y, m_ballHeight);
-
-            var t = tx;
-
-            m_totalBallTime = t;
-
-            transform.position = m_initialPosition;
+            m_ball.transform.position = m_initialBallPosition;
             var debugAccumTime = 0.0f;
 
             while (debugAccumTime < m_accmulatedBallTime)
             {
-                var vel = GetVelocity(initialVel, m_gravity, debugAccumTime);
-                transform.position = transform.position + vel;
+                var vel = GetVelocity(InitialVelocity, m_gravity, debugAccumTime);
+                m_ball.transform.position = m_ball.transform.position + vel;
 
                 debugAccumTime += m_debugIntervalTime;
             }
@@ -298,29 +277,27 @@ public class Ball : MonoBehaviour
 
     public void Reset()
     {
-        transform.position = m_initialPosition;        
+        m_ball.transform.position = m_initialBallPosition;        
         m_isMove = false;
 
         m_accmulatedBallTime = 0;
         m_accumulatedVertAngleTime = 0;
-        m_verticalAngle = 0;
+        m_normalizedDistanceAdjustment = 0;
     }
 
     void RenderLine()
-    {
-        // calculate speed based on angle
-        var initialVel = InitialVelocity;
-
-        var tempPos = m_initialPosition;
+    {                
+        var tempPos = transform.position;
         var tempTime = 0.0f;
-        
-        var vf = GetVelocity(initialVel, m_gravity, new Vector3(0, -m_ballHeight, m_ballDistance));
-        var t = GetTime(initialVel.z, vf.z, m_ballDistance);
+
+        var dist = EvaluateCurveValue(m_distanceCurve, m_distanceRange, m_normalizedDistanceAdjustmentRange.x, m_normalizedDistanceAdjustmentRange.y, m_normalizedDistanceAdjustment);
+        var vel = EvaluateCurveValue(m_speedCurve, m_xVelRange, m_normalizedDistanceAdjustmentRange.x, m_normalizedDistanceAdjustmentRange.y, m_normalizedDistanceAdjustment);
+        var t = GetTime(vel, dist);
 
         var i = 0;
         while (t > 0)
         {
-            var intermediateVelocity = GetVelocity(initialVel, m_gravity, tempTime);            
+            var intermediateVelocity = GetVelocity(InitialVelocity, m_gravity, tempTime);            
             tempPos += intermediateVelocity;
             
             if (i <= m_line.Count && m_line.Count < m_lineMaxDots)
@@ -352,44 +329,18 @@ public class Ball : MonoBehaviour
         }
     }
 
-    public float GetTime(float u, float v, float s)
+    float EvaluateCurveValue(AnimationCurve curve, float maxRange, float minNormalized, float maxNormalized, float valueNormalized)
     {
-        float t = (2*s) / (u + v);
-
-        return t;
+        float cnd = Mathf.Lerp(minNormalized, maxNormalized, valueNormalized);
+        return curve.Evaluate(cnd) * maxRange;
+    }
+    
+    float GetTime(float velocity, float distance)
+    {
+        return (velocity / distance);
     }
 
-    public Vector3 GetTargetCalculatedVelocity(float inHorizontal, float inVertical)
-    {
-        var horizontalAngle = Mathf.Lerp(m_horizontalAngleRange.x, Mathf.Clamp(m_horizontalAngleRange.y, m_horizontalAngleRange.x, m_horizontalAngleRange.y), inHorizontal);
-        var forward = -Vector3.Slerp(Vector3.right, -Vector3.right, horizontalAngle).normalized;
-
-        // calculate initial velocity given speed and angle instead
-        var verticalAngle = Mathf.Lerp(m_verticalAngleRange.x, Mathf.Clamp(m_verticalAngleRange.y, m_verticalAngleRange.x, m_verticalAngleRange.y), inVertical);
-        var v = Vector3.Slerp(forward, m_throwUp, verticalAngle);
-
-        return v * m_speedCurve.Evaluate(verticalAngle);
-    }
-
-    public Vector3 GetVelocity(Vector3 u, Vector3 a, Vector3 s, bool isZ = true)
-    {
-        var ux = isZ ? u.z : u.x;
-        var sx = isZ ? s.z : s.x;
-        var ax = isZ ? a.z : a.x;
-
-        var uz = isZ ? u.x : u.z;
-        var sz = isZ ? s.x : s.z;
-        var az = isZ ? a.x : a.z;
-
-        var vx = Mathf.Sqrt(Mathf.Pow(ux, 2) + (2*ax*sx));
-        var vy = Mathf.Sqrt(Mathf.Pow(u.y, 2) + (2*a.y*s.y));
-
-        var vz = Mathf.Sqrt(Mathf.Pow(uz, 2) + (2 * az * sz));
-
-        return isZ ? new Vector3(vz, vy, vx) : new Vector3(vx, vy, vz);
-    }
-
-    public Vector3 GetVelocity(Vector3 u, Vector3 a, float t, bool isZ = true)
+    Vector3 GetVelocity(Vector3 u, Vector3 a, float t, bool isZ = true)
     {
         var ux = isZ ? u.z : u.x;        
         var ax = isZ ? a.z : a.x;

@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     }
 
     [Header("Managers")]
-    [SerializeField] private Ball m_ball;
+    [SerializeField] private CurveHandler m_ball;
     [SerializeField] private SpawnManager m_spawnManager;
 
     [Header("Difficulty setttings")]
