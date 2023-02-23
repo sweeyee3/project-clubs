@@ -234,17 +234,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1404332604 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5646418926736942580, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
-  m_PrefabInstance: {fileID: 5646418928101412808}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c76d0a599a7d021418af89d7b38ac5dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1640556926 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6046289684257121516, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
@@ -505,7 +494,7 @@ PrefabInstance:
     - target: {fileID: 8160557920308041833, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
       propertyPath: m_ball
       value: 
-      objectReference: {fileID: 1404332604}
+      objectReference: {fileID: 0}
     - target: {fileID: 8160557920308041833, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
       propertyPath: m_game
       value: 
@@ -581,7 +570,7 @@ PrefabInstance:
     - target: {fileID: 8160557920724105365, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
       propertyPath: m_ball
       value: 
-      objectReference: {fileID: 1404332604}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
 --- !u!1001 &8724513315696681138
@@ -591,6 +580,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2338125378922153204, guid: ef37016e9fa33fc4cafc668bdfee9a17, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2338125378922153204, guid: ef37016e9fa33fc4cafc668bdfee9a17, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2338125378922153204, guid: ef37016e9fa33fc4cafc668bdfee9a17, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8724513314705065574, guid: ef37016e9fa33fc4cafc668bdfee9a17, type: 3}
       propertyPath: m_Name
       value: Environment
