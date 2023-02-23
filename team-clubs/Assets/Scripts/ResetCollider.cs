@@ -7,25 +7,27 @@ using UnityEditor;
 
 public class ResetCollider : MonoBehaviour
 {
-    [SerializeField] private Vector3 size;
+    [SerializeField] private CurveHandler m_curveHandler;
+    [SerializeField] private Vector3 m_size;
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawCube(transform.position, size);
+        Gizmos.DrawCube(transform.position, m_size);
     }
 #endif
 
     private void Update()
     {
-        var collided = Physics.OverlapBox(transform.position, size / 2);
+        var collided = Physics.OverlapBox(transform.position, m_size / 2);
 
         foreach(var collide in collided)
         {
             if (collide.tag == "Ball")
             {
-                collide.GetComponentInParent<CurveHandler>().Reset();
+                Debug.Log("death");
+                m_curveHandler.Reset();
             }
         }
     }    

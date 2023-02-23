@@ -8,6 +8,7 @@ using UnityEditor;
 public class Hoop : MonoBehaviour
 {
     [SerializeField] private float m_hoopSuccess = 0.5f;
+    [SerializeField] private Transform m_point;
 
     [SerializeField] private Vector3 m_boxSize;
     [SerializeField] private Vector3 m_boxOffset;
@@ -18,6 +19,7 @@ public class Hoop : MonoBehaviour
     [SerializeField] private float m_fov;
 
     private Vector3 m_hoopGridIndex;
+    private CurveHandler m_curveHandler;
 
     public Vector3 HoopGridIndex
     {
@@ -39,6 +41,11 @@ public class Hoop : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        m_curveHandler = GameObject.FindObjectOfType<CurveHandler>();
+    }
+
     private void Update()
     {
         var collided = Physics.OverlapBox(transform.position + m_boxOffset, m_boxSize / 2);
@@ -57,14 +64,18 @@ public class Hoop : MonoBehaviour
             bool isWithinRight = CrossSign(ovBottom.normalized, maxRightVector, norm) > 0;
             bool isWithinLeft = CrossSign(ovBottom.normalized, minLeftVector, norm) < 0;
             bool isWithinBottom = CrossSign(ovBottom.normalized, bottomVector, transform.right, true) > 0;
-            bool isWithinTop = CrossSign(ovTop.normalized, topVector, transform.right) < 0;
+            //bool isWithinTop = CrossSign(ovTop.normalized, topVector, transform.right) < 0;
             bool isInsideRadius = IsInsideCylinderRadius(transform.position, collide.transform.position, norm, m_radius);
             bool isOutsideInnerRadius = !IsInsideCylinderRadius(transform.position, collide.transform.position, norm, m_inner_radius);
-            bool isFromTop = IsFromTop(collide.GetComponentInParent<CurveHandler>().CurrentVelocity, m_hoopSuccess);
+            bool isFromTop = IsFromTop(collide.transform.position, m_hoopSuccess);
 
-            if (isWithinRight && isWithinLeft && isWithinBottom && isWithinTop && isInsideRadius && isOutsideInnerRadius && isFromTop)
+            Debug.Log(isWithinRight + ", " + isWithinLeft + ", " + isWithinBottom + ", " + isInsideRadius + ", " + isOutsideInnerRadius + ", " + isFromTop);
+
+            if (isWithinRight && isWithinLeft && isWithinBottom && isInsideRadius && isOutsideInnerRadius && isFromTop)
             {
-                collide.GetComponentInParent<CurveHandler>().Reset();
+                Debug.Log("success?");
+
+                m_curveHandler.Reset();
                 GameManager.Instance.CurrentScore += 1;
                 SpawnManager.Instance.Remove(this);                
                 // TODO: spawn effects!
@@ -107,9 +118,10 @@ public class Hoop : MonoBehaviour
         return radialDist <= radius;
     }
 
-    private bool IsFromTop(Vector3 otherDir, float success)
-    {                
-        var dot = Vector3.Dot(otherDir, -transform.up);
+    private bool IsFromTop(Vector3 otherPosition, float success)
+    {
+        var otherDir = m_point.position - otherPosition;
+        var dot = Vector3.Dot(otherDir.normalized, -transform.up);        
 
         return dot > success;
     }
@@ -147,6 +159,8 @@ public class Hoop : MonoBehaviour
 #if UNITY_EDITOR
     private void DrawCylinderTrigger(GameObject o)
     {
+        if (m_curveHandler == null) m_curveHandler = GameObject.FindObjectOfType<CurveHandler>();
+
         Vector3 norm = transform.up;
 
         Vector3 minLeftVector = FindWidthVectorByFov(m_fov, -1, m_radius, transform.forward, transform.right);
@@ -163,7 +177,7 @@ public class Hoop : MonoBehaviour
 
             // find cross product with minleft and max right, < 0 outside, > 0 inside
             Vector3 ovBottom = (o.transform.position - transform.position);
-            Vector3 ovTop = (o.transform.position - (transform.position + (norm * m_height)));
+            Vector3 ovTop = (o.transform.position - (transform.position + (norm * m_height)));            
 
             bool isWithinRight = CrossSign(ovBottom.normalized, maxRightVector, norm) > 0;
             bool isWithinLeft = CrossSign(ovBottom.normalized, minLeftVector, norm) < 0;
@@ -171,7 +185,7 @@ public class Hoop : MonoBehaviour
             bool isWithinTop = CrossSign(ovTop.normalized, topVector, transform.right) < 0;
             bool isInsideRadius = IsInsideCylinderRadius(transform.position, o.transform.position, norm, m_radius);
             bool isOutsideInnerRadius = !IsInsideCylinderRadius(transform.position, o.transform.position, norm, m_inner_radius);
-            bool isFromTop = IsFromTop(o.GetComponentInParent<CurveHandler>().CurrentVelocity, m_hoopSuccess);
+            bool isFromTop = IsFromTop(o.transform.position, m_hoopSuccess);
 
             if (isWithinRight && isWithinLeft && isWithinBottom && isWithinTop && isInsideRadius && isOutsideInnerRadius && isFromTop) Handles.color = Color.green;
             else Handles.color = Color.red;

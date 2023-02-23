@@ -38,12 +38,14 @@ public class CurveHandler : MonoBehaviour
     [SerializeField] private GameObject m_lineDotPrefab;
     [SerializeField] private Transform m_lineParent;
     [SerializeField] private int m_lineMaxDots = 50;
+    [SerializeField] private GameObject m_arrow;
 
     [Header("Debug Settings")]
     [SerializeField] private float m_debugIntervalTime = 0.01f;
     [SerializeField] private float m_debugAccumTime = 0.0f;
 
-    [Header("Fixed Settings")]    
+    [Header("Fixed Settings")]
+    [SerializeField] private float m_timeAcceleration = 5;
     [SerializeField] private Vector3 m_throwUp = new Vector3(0, 1, 0);
 
     [Header("Calculated Settings")]    
@@ -70,6 +72,7 @@ public class CurveHandler : MonoBehaviour
         {
             var range = EvaluateCurveValue(m_distanceCurve, m_distanceRange, m_normalizedDistanceAdjustmentRange.x, m_normalizedDistanceAdjustmentRange.y, m_normalizedDistanceAdjustment);
             var velocity = EvaluateCurveValue(m_speedCurve, m_xVelRange, m_normalizedDistanceAdjustmentRange.x, m_normalizedDistanceAdjustmentRange.y, m_normalizedDistanceAdjustment);
+           
             var time = GetTime(velocity, range);            
 
             var s = new Vector3(0, 0, range);
@@ -90,9 +93,13 @@ public class CurveHandler : MonoBehaviour
             float vy = (sy - 0.5f * ay * Mathf.Pow(t, 2)) / t;
             float vz = (sz - 0.5f * az * Mathf.Pow(t, 2)) / t;
 
-            return isZ ? new Vector3(vz, vy, vx) : new Vector3(vx, vy, vz);
+            var initialVel = isZ ? new Vector3(vz, vy, vx) : new Vector3(vx, vy, vz);
 
-            //return m_initialVelocity;
+            var forward = -Vector3.Slerp(Vector3.right, -Vector3.right, Mathf.Lerp(m_forwardAdjustmentRange.x, m_forwardAdjustmentRange.y, m_forwardAdjustment)).normalized;            
+            float iv = UtilityExtension.InverseLerp(transform.forward, transform.up, initialVel.normalized);
+            var velocityDirection = Vector3.Slerp(forward, transform.up, iv);
+
+            return velocityDirection * initialVel.magnitude;            
         }
     }
 
@@ -112,7 +119,7 @@ public class CurveHandler : MonoBehaviour
         }
     }    
 
-    bool m_isMove;
+    [SerializeField] bool m_isMove;
 
     private void Awake()
     {
@@ -138,8 +145,10 @@ public class CurveHandler : MonoBehaviour
             tempTime += m_debugIntervalTime;
             t -= m_debugIntervalTime;
         }
-        
-        m_ball.transform.position = m_initialBallPosition;
+
+        var diff = m_initialBallPosition - transform.position; 
+
+        m_ball.transform.position = m_accmulatedBallTime <= 0 ? m_initialBallPosition : m_initialBallPosition - diff;
         m_debugAccumTime = 0;
 
         while (m_debugAccumTime < m_accmulatedBallTime)
@@ -149,6 +158,13 @@ public class CurveHandler : MonoBehaviour
 
             m_debugAccumTime += m_debugIntervalTime;
         }
+
+
+        var forward = -Vector3.Slerp(Vector3.right, -Vector3.right, m_forwardAdjustment).normalized;
+        var velocityDirection = Vector3.Slerp(forward, m_throwUp, m_normalizedDistanceAdjustment);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(m_initialBallPosition, m_initialBallPosition + velocityDirection);
+
         Gizmos.color = Color.red;
         Gizmos.DrawLine(m_initialBallPosition, (m_initialBallPosition + (InitialVelocity)));                    
     }
@@ -238,7 +254,8 @@ public class CurveHandler : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.Space))
             {
                 // release ball
-                m_isMove = true;                           
+                m_isMove = true;
+                m_accmulatedBallTime = 0.5f;
             }
 
             if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
@@ -269,8 +286,14 @@ public class CurveHandler : MonoBehaviour
 
                 debugAccumTime += m_debugIntervalTime;
             }
-            m_accmulatedBallTime += (Time.deltaTime);
+            m_accmulatedBallTime += (Time.deltaTime * m_timeAcceleration);
         }
+
+        var forward = -Vector3.Slerp(Vector3.right, -Vector3.right, Mathf.Lerp(m_forwardAdjustmentRange.x, m_forwardAdjustmentRange.y, m_forwardAdjustment)).normalized;
+        m_arrow.transform.position = m_initialBallPosition;
+        m_arrow.transform.forward = forward;
+        m_arrow.transform.localScale = new Vector3( 1 + m_normalizedDistanceAdjustment, 1 + m_normalizedDistanceAdjustment, 1 + m_normalizedDistanceAdjustment ); 
+        //m_arrow.transform.forward = Vector3.up;
 
         RenderLine();
     }
@@ -295,6 +318,7 @@ public class CurveHandler : MonoBehaviour
         var t = GetTime(vel, dist);
 
         var i = 0;
+
         while (t > 0)
         {
             var intermediateVelocity = GetVelocity(InitialVelocity, m_gravity, tempTime);            
@@ -314,8 +338,8 @@ public class CurveHandler : MonoBehaviour
                 m_line[i].transform.position = tempPos;
             }            
 
-            tempTime += m_lineDotInterval;
-            t -= m_lineDotInterval;
+            tempTime += ( m_lineDotInterval );
+            t -= ( m_lineDotInterval );
 
             i++;
 
@@ -331,7 +355,7 @@ public class CurveHandler : MonoBehaviour
 
     float EvaluateCurveValue(AnimationCurve curve, float maxRange, float minNormalized, float maxNormalized, float valueNormalized)
     {
-        float cnd = Mathf.Lerp(minNormalized, maxNormalized, valueNormalized);
+        float cnd = Mathf.Lerp(minNormalized, maxNormalized, valueNormalized);        
         return curve.Evaluate(cnd) * maxRange;
     }
     
