@@ -300,6 +300,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Win
       objectReference: {fileID: 0}
+    - target: {fileID: 3919872111444914832, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
 --- !u!224 &6046289682603026962 stripped
@@ -317,6 +321,10 @@ PrefabInstance:
     - target: {fileID: 2917472238628911182, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
       propertyPath: m_Name
       value: Lose
+      objectReference: {fileID: 0}
+    - target: {fileID: 2917472238628911182, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2917472238628911183, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
       propertyPath: m_Pivot.x
