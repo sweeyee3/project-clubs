@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class Ball : MonoBehaviour
 {
     [Header("Mobile Control Settings")]
+    [SerializeField] private Camera m_camera;
     [SerializeField] private Vector3 m_swipeRange = new Vector3(2, 2, 0);
 
     [Header("Keyboard / Mouse Settings")]
@@ -52,6 +55,7 @@ public class Ball : MonoBehaviour
 
     private Vector3 m_touchStartPos;
     private Vector3 m_touchCurrentPos;
+    private bool m_isTapped;
 
     private List<GameObject> m_line;
 
@@ -110,15 +114,16 @@ public class Ball : MonoBehaviour
         }
     }
 
-    Coroutine m_moveRoutine;
+    bool m_isMove;
 
     private void Awake()
     {
         m_line = new List<GameObject>();
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
-    {       
+    {        
         // calculate speed based on angle
         var initialVel = InitialVelocity;
 
@@ -142,7 +147,7 @@ public class Ball : MonoBehaviour
             tempTime += m_debugIntervalTime;
             t -= m_debugIntervalTime;
         }
-
+        
         transform.position = m_initialPosition;
         m_debugAccumTime = 0;
 
@@ -153,10 +158,10 @@ public class Ball : MonoBehaviour
 
             m_debugAccumTime += m_debugIntervalTime;
         }        
-
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(m_initialPosition, (m_initialPosition + (initialVel)));            
+        Gizmos.DrawLine(m_initialPosition, (m_initialPosition + (initialVel)));                    
     }
+#endif
 
     private void Update()
     {        
@@ -164,8 +169,9 @@ public class Ball : MonoBehaviour
         {
             Reset();
         }
-
-        if ( m_moveRoutine == null && GameManager.Instance.CurrentGameState == GameManager.EGameState.GAME )
+        
+        if (!m_isMove && GameManager.Instance.CurrentGameState == GameManager.EGameState.GAME)
+            //if ( m_moveRoutine == null && GameManager.Instance.CurrentGameState == GameManager.EGameState.GAME )
         {
             #if UNITY_STANDALONE_WIN
 
@@ -187,27 +193,45 @@ public class Ball : MonoBehaviour
 
                 switch (touch.phase)
                 {
+                    case TouchPhase.Stationary:
                     case TouchPhase.Began:
-                        m_touchStartPos = touch.position;
+                        RaycastHit info;
+                        Debug.Log(m_isTapped);
+                        if (!m_isTapped && Physics.Raycast(m_camera.ScreenPointToRay(touch.position), out info, 999, 1 << LayerMask.NameToLayer("BallTap")))
+                        {
+                            m_touchStartPos = touch.position;
+                            m_isTapped = true;
+                            Debug.Log("tapped: " + info.collider.transform.parent.name);
+                        }
+
                         break;
                     case TouchPhase.Moved:
-                        m_touchCurrentPos = touch.position;
-                        
-                        // move horizontal axis
-                        var normalizedDeltaX = Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x);
-                        
-                        m_horizontalAngle = Mathf.Clamp(m_horizontalAngle + (normalizedDeltaX * 0.5f), 0, 1);
-                        
-                        // move vertical axis
-                        var normalizedDeltaY = Mathf.InverseLerp(0, Screen.height, m_touchStartPos.y) - Mathf.InverseLerp(0, Screen.height, m_touchCurrentPos.y);
-                        //m_verticalAngle = Mathf.Clamp(m_verticalAngle + (normalizedDeltaY * 1.25f), 0, 1);
+                        if (m_isTapped)
+                        {
+                            m_touchCurrentPos = touch.position;
 
-                        Debug.Log(normalizedDeltaY);
+                            // TODO: smooth dx2 and dy2
 
-                        break;
+                            // move horizontal axis
+
+                            var dx1 = Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x);
+                            var dx2 = Mathf.InverseLerp(-0.25f, 0.25f, dx1);
+                            m_horizontalAngle = dx2;
+
+                            // move vertical axis
+                            Debug.Log(m_touchCurrentPos.y);
+                            var dy1 = Mathf.InverseLerp(m_touchStartPos.y, 0, m_touchCurrentPos.y);
+                            var dy2 = Mathf.InverseLerp(0, 0.5f, dy1);
+                            m_verticalAngle = dy2;                            
+                        }
+
+                        break;                    
                     case TouchPhase.Ended:
-                        if (m_moveRoutine != null) StopCoroutine(m_moveRoutine);
-                        m_moveRoutine = StartCoroutine(MoveBall());
+                        if (m_isTapped)
+                        {
+                            m_isMove = true;
+                            m_isTapped = false;
+                        }
                         break;
                 }
             }
@@ -225,8 +249,7 @@ public class Ball : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.Space))
             {
                 // release ball
-                if (m_moveRoutine != null) StopCoroutine(m_moveRoutine);
-                m_moveRoutine = StartCoroutine(MoveBall());            
+                m_isMove = true;                           
             }
 
             if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
@@ -245,17 +268,38 @@ public class Ball : MonoBehaviour
             }               
         }
 
+        if (m_isMove)
+        {
+            var initialVel = InitialVelocity;
+
+            var vf = GetVelocity(initialVel, m_gravity, new Vector3(0, -m_ballHeight, m_ballDistance));
+            var tx = GetTime(initialVel.z, vf.z, m_ballDistance);
+            var ty = GetTime(initialVel.y, vf.y, m_ballHeight);
+
+            var t = tx;
+
+            m_totalBallTime = t;
+
+            transform.position = m_initialPosition;
+            var debugAccumTime = 0.0f;
+
+            while (debugAccumTime < m_accmulatedBallTime)
+            {
+                var vel = GetVelocity(initialVel, m_gravity, debugAccumTime);
+                transform.position = transform.position + vel;
+
+                debugAccumTime += m_debugIntervalTime;
+            }
+            m_accmulatedBallTime += (Time.deltaTime);
+        }
+
         RenderLine();
     }
 
     public void Reset()
     {
-        transform.position = m_initialPosition;
-        if (m_moveRoutine != null)
-        {
-            StopCoroutine(m_moveRoutine);
-            m_moveRoutine = null;
-        }
+        transform.position = m_initialPosition;        
+        m_isMove = false;
 
         m_accmulatedBallTime = 0;
         m_accumulatedVertAngleTime = 0;
@@ -358,27 +402,5 @@ public class Ball : MonoBehaviour
         var vz = uz + az * t;
 
         return isZ ? new Vector3(vz, vy, vx) : new Vector3(vx, vy, vz);
-    }
-    
-    IEnumerator MoveBall()
-    {
-        var initialVel = InitialVelocity;
-
-        var vf = GetVelocity(initialVel, m_gravity, new Vector3(0, -m_ballHeight, m_ballDistance));
-        var tx = GetTime(initialVel.z, vf.z, m_ballDistance);
-        var ty = GetTime(initialVel.y, vf.y, m_ballHeight);
-
-        var t = tx;
-
-        m_totalBallTime = t;        
-
-        while (m_accmulatedBallTime < m_totalBallTime)
-        {
-            var intermediateVelocity = GetVelocity(initialVel, m_gravity, m_accmulatedBallTime);
-            transform.Translate(intermediateVelocity);
-            
-            m_accmulatedBallTime += (Time.deltaTime);
-            yield return null;
-        }        
-    }
+    }       
 }
