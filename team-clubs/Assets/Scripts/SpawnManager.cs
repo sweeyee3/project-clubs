@@ -14,6 +14,9 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private int m_minSpawnCount = 1;
     [SerializeField] private int m_maxSpawnCount = 5;
 
+    [Header("Spawn Setting")]
+    [SerializeField] private GameObject m_effectPrefab;
+
     [Header("Grid Settings")]
     [SerializeField] private Vector3 m_cellSize;
 
@@ -112,15 +115,14 @@ public class SpawnManager : MonoBehaviour
 
     void Spawn()
     {
-        // pick random prefab
-        var shuffledFab = UtilityExtension.Shuffle(m_hoopPrefabs);
+        var shuffledPositions = UtilityExtension.Shuffle(m_cellIndices); // pick random position
+        var shuffledFab = UtilityExtension.Shuffle(m_hoopPrefabs); // pick random prefab
+
+        if (shuffledPositions.Count <= 0) return;               
 
         // instantiate prefab
         var hoopObj = Instantiate(shuffledFab[0]);
-        var hoopInstance = hoopObj.GetComponentInChildren<Hoop>();
-
-        // pick random position
-        var shuffledPositions = UtilityExtension.Shuffle(m_cellIndices);
+        var hoopInstance = hoopObj.GetComponentInChildren<Hoop>();       
 
         hoopObj.transform.position = GetCellPosition((int)shuffledPositions[0].x, (int)shuffledPositions[0].y, (int)shuffledPositions[0].z);
 
@@ -133,10 +135,19 @@ public class SpawnManager : MonoBehaviour
 
     public void Remove(Hoop hoop)
     {
-        Debug.Log("remove!");
+        // spawn hoop effect here
+        StartCoroutine(SpawnEffect(m_effectPrefab, hoop.transform.parent.position));
         m_cellIndices.Add(hoop.HoopGridIndex);
         m_hoopInstances.Remove(hoop);
         Destroy(hoop.transform.parent.gameObject);
+    }
+
+    IEnumerator SpawnEffect(GameObject effect, Vector3 position)
+    {
+        var effectObj = Instantiate(effect);
+        effectObj.transform.position = position;
+        yield return new WaitForSeconds(0.25f);
+        Destroy(effectObj);
     }
 
     public void Reset()
@@ -148,6 +159,23 @@ public class SpawnManager : MonoBehaviour
                 Destroy(hoop.transform.parent.gameObject);
             }
             m_hoopInstances.Clear();
+        }
+
+
+        if (m_cellIndices != null)
+        {
+            var gridSize = GetCellCounts();
+            m_cellIndices.Clear();
+            for (var x = 0; x < gridSize.x; x++)
+            {
+                for (var y = 0; y < gridSize.y; y++)
+                {
+                    for (var z = 0; z < gridSize.z; z++)
+                    {
+                        m_cellIndices.Add(new Vector3(x, y, z));
+                    }
+                }
+            }
         }
     }
 

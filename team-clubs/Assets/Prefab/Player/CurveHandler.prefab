@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 259165995671067038}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -5, z: 1.5}
+  m_LocalPosition: {x: 0, y: -2, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45,50 +45,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_camera: {fileID: 0}
-  m_distanceAdjustmentSpeed: 1.5
   m_forwardAdjustmentSpeed: 1
-  m_distanceCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  m_forwardSpeedAdjustmentSpeed: 1
   m_speedCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -96,22 +72,36 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   m_forwardAdjustmentRange: {x: 0.25, y: 0.75}
-  m_forwardAdjustment: 0
-  m_normalizedDistanceAdjustmentRange: {x: 0.3, y: 0.9}
-  m_normalizedDistanceAdjustment: 0
-  m_distanceRange: 0.384
-  m_xVelRange: 2.74
-  m_gravity: {x: 0, y: -0.02, z: 0}
+  m_forwardAdjustment: 0.5
+  m_normalizedForwardSpeedAdjustmentRange: {x: 0.5, y: 0.9}
+  m_normalizedForwardSpeedAdjustment: 0
+  m_maxForwardSpeed: 1.25
+  m_gravity: {x: 0, y: -9, z: 0}
   m_ball: {fileID: 0}
-  m_initialBallPosition: {x: 0, y: -2, z: 4.25}
-  m_lineDotInterval: 0.5
-  m_lineDotPrefab: {fileID: 0}
+  m_initialBallPosition: {x: 0, y: -2, z: -5}
+  m_bounceCount: 2
+  m_normalizedVelocityReductionFactor: 0.648
+  m_normalizedGravityModulation: 0.129
+  m_bounceLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  m_isDisplayLine: 0
+  m_lineDotInterval: 0.01
+  m_lineDotPrefab: {fileID: 2242882325883393891, guid: 0f87feee27f984f4d9a2bc3a36a75264, type: 3}
   m_lineParent: {fileID: 0}
   m_lineMaxDots: 50
+  m_isDisplayArrow: 1
+  m_initalArrowSize: {x: 1.5, y: 1}
+  m_maxArrowSize: {x: 2, y: 1}
+  m_arrowParent: {fileID: 0}
+  m_arrowSprite: {fileID: 0}
   m_debugIntervalTime: 0.01
-  m_debugAccumTime: 0
-  m_timeAcceleration: 10
+  m_debugTotalTime: 0
+  m_isXDirectionForward: 1
+  m_forwardDegAngle: 50
+  m_timeAcceleration: 1
   m_throwUp: {x: 0, y: 1, z: 0}
-  m_accmulatedBallTime: 0.5
+  m_accmulatedBallTime: -0
   m_accumulatedVertAngleTime: 0
+  m_currentVelocity: {x: 0, y: 0, z: 0}
   m_isMove: 0

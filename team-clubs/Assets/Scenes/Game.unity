@@ -316,6 +316,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameElements
       objectReference: {fileID: 0}
+    - target: {fileID: 1099161432858213462, guid: da1bf5e41c5c6a94da294b23bdec4f5e, type: 3}
+      propertyPath: m_curveHandler
+      value: 
+      objectReference: {fileID: 5646418928101412809}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da1bf5e41c5c6a94da294b23bdec4f5e, type: 3}
 --- !u!1001 &5646418928101412808
@@ -325,6 +329,54 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_camera
+      value: 
+      objectReference: {fileID: 5646418928101412810}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_xVelRange
+      value: 0.64
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_distanceRange
+      value: 0.897
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_debugAccumTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_timeAcceleration
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_currentVelocity.x
+      value: 0.000000027007799
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_currentVelocity.y
+      value: 0.7507741
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_currentVelocity.z
+      value: 0.6178664
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_accmulatedBallTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_currentAdditionalTime
+      value: 0.3105748
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_normalizedDistanceAdjustment
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_normalizedForwardSpeedAdjustment
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5646418928030396924, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
       propertyPath: m_Name
       value: Player
@@ -383,10 +435,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6915430127693575336, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2
+      value: -5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+--- !u!114 &5646418928101412809 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+  m_PrefabInstance: {fileID: 5646418928101412808}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 170899ccbc72ae14bbf2551a2df53304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!20 &5646418928101412810 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 5646418927596828599, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+  m_PrefabInstance: {fileID: 5646418928101412808}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6046289682634493330
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -394,6 +462,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 368902131088469271, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6046289682877704729, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
       propertyPath: m_Name
       value: UI
@@ -506,7 +578,7 @@ PrefabInstance:
     - target: {fileID: 8160557920308041833, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
       propertyPath: m_ball
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5646418928101412809}
     - target: {fileID: 8160557920308041833, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
       propertyPath: m_game
       value: 
@@ -582,7 +654,11 @@ PrefabInstance:
     - target: {fileID: 8160557920724105365, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
       propertyPath: m_ball
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5646418928101412809}
+    - target: {fileID: 8160557920724105365, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
+      propertyPath: m_hoopPrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: 5447783782207438797, guid: 006d8b5e3ca46fe448b0b99aae9e0e4b, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
 --- !u!1001 &8724513315696681138
@@ -603,6 +679,10 @@ PrefabInstance:
     - target: {fileID: 2338125378922153204, guid: ef37016e9fa33fc4cafc668bdfee9a17, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7579154719340526465, guid: ef37016e9fa33fc4cafc668bdfee9a17, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8724513314705065574, guid: ef37016e9fa33fc4cafc668bdfee9a17, type: 3}
       propertyPath: m_Name

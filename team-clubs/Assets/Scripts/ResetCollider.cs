@@ -14,7 +14,7 @@ public class ResetCollider : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawCube(transform.position, m_size);
+        Gizmos.DrawWireCube(transform.position, m_size);
     }
 #endif
 

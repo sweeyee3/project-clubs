@@ -45,14 +45,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_spawnHeight: 10
-  m_spawnLength: 16.5
+  m_spawnLength: 20
   m_spawnWidth: 18
-  m_offset: {x: 0, y: 4, z: 10}
+  m_offset: {x: 0, y: 5, z: 10}
   m_minSpawnCount: 1
   m_maxSpawnCount: 5
-  m_cellSize: {x: 5, y: 5, z: 5}
+  m_effectPrefab: {fileID: 3248292207736956314, guid: 29f8de2c9dfe75549af3503372540022, type: 3}
+  m_cellSize: {x: 8, y: 5, z: 5}
   m_ball: {fileID: 0}
   m_hoopPrefabs:
   - {fileID: 3248292207736956314, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
-  - {fileID: 3248292207736956314, guid: 551b5e4edc370a3429d6e5565d4f924f, type: 3}
   m_isDisplaySpawnGrid: 1

@@ -28,9 +28,7 @@ public class MovingHoop : MonoBehaviour
         {
             gridIndex = new Vector3((gridIndex.x + 1), gridIndex.y, gridIndex.z);
         }
-        posRight = SpawnManager.Instance.GetCellPosition((int)gridIndex.x, (int)gridIndex.y, (int)gridIndex.z);
-        Debug.Log(posLeft);
-        Debug.Log(posRight);
+        posRight = SpawnManager.Instance.GetCellPosition((int)gridIndex.x, (int)gridIndex.y, (int)gridIndex.z);        
 
         //Store spawn point
         //spawnPos = transform.position;
