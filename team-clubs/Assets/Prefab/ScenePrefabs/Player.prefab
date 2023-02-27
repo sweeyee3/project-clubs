@@ -321,7 +321,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4195633436266242014, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
       propertyPath: m_isMoveBall
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4195633436266242014, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
+      propertyPath: m_currentVelocity.x
+      value: 0.000000027007799
+      objectReference: {fileID: 0}
+    - target: {fileID: 4195633436266242014, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
+      propertyPath: m_currentVelocity.y
+      value: 0.7507741
+      objectReference: {fileID: 0}
+    - target: {fileID: 4195633436266242014, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
+      propertyPath: m_currentVelocity.z
+      value: 0.6178664
+      objectReference: {fileID: 0}
+    - target: {fileID: 4195633436266242014, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
+      propertyPath: m_currentBounceCount
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7151100282654864709, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
       propertyPath: m_Name
@@ -404,10 +420,6 @@ PrefabInstance:
     - target: {fileID: 2106267517175175576, guid: 150dc23d4970a7340a342ab8983b606a, type: 3}
       propertyPath: m_Name
       value: Line
-      objectReference: {fileID: 0}
-    - target: {fileID: 2106267517175175576, guid: 150dc23d4970a7340a342ab8983b606a, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2106267517175175591, guid: 150dc23d4970a7340a342ab8983b606a, type: 3}
       propertyPath: m_RootOrder

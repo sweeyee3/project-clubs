@@ -374,7 +374,15 @@ PrefabInstance:
       value: 0.897
       objectReference: {fileID: 0}
     - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_isDisplayLine
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
       propertyPath: m_debugAccumTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_isDisplayArrow
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}

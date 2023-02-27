@@ -147,7 +147,18 @@ public class CurveHandler : MonoBehaviour
         m_debugBall.gameObject.SetActive(false);
 #endif
         m_line = new List<GameObject>();
-        m_balls = new List<Ball>();        
+        m_balls = new List<Ball>();
+        
+        if (m_isDisplayLine)
+        {
+            m_lineParent.gameObject.SetActive(true);
+            for(var i=0; i<m_lineMaxDots; i++)
+            {
+                var line = Instantiate(m_lineDotPrefab);
+                line.transform.parent = m_lineParent;
+                m_line.Add(line);
+            }
+        }
     }
 
 #if UNITY_EDITOR
@@ -326,7 +337,9 @@ public class CurveHandler : MonoBehaviour
                             // remake ball
                             m_currentBall = CreateBall();
 
-                            m_isTapped = false;                            
+                            m_isTapped = false;
+                            m_normalizedForwardSpeedAdjustment = 0;
+                            m_accumulatedVertAngleTime = 0;
                         }
                         break;
                 }
@@ -350,6 +363,8 @@ public class CurveHandler : MonoBehaviour
                 ballObj.GetComponent<Ball>().Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);
                 
                 m_debugTotalTime = CustomUtility.CalculateProjectileTime(InitialProjectileVelocity, m_gravity);
+                m_normalizedForwardSpeedAdjustment = 0;
+                m_accumulatedVertAngleTime = 0;
                 //m_currentVelocity = InitialProjectileVelocity;
             }
 
@@ -374,10 +389,7 @@ public class CurveHandler : MonoBehaviour
 
     public void Reset(Ball ball)
     {
-        DestroyBall(ball);       
-        
-        m_accumulatedVertAngleTime = 0;
-        m_normalizedForwardSpeedAdjustment = 0;
+        DestroyBall(ball);                              
     }
     
     public void ResetAll()
@@ -387,10 +399,10 @@ public class CurveHandler : MonoBehaviour
         {
             DestroyBall(m_balls.Count - 1);
             count--;
-        }        
-        
-        m_accumulatedVertAngleTime = 0;
+        }
+
         m_normalizedForwardSpeedAdjustment = 0;
+        m_accumulatedVertAngleTime = 0;        
         m_balls.Clear();
 
         m_currentBall = CreateBall();
@@ -428,6 +440,31 @@ public class CurveHandler : MonoBehaviour
 
     void RenderLine()
     {
-        
+        var tempPos = transform.position;
+        var tempTime = 0.0f;        
+        var isProjectile = true;
+
+        var currentVelocity = InitialProjectileVelocity;
+        var t = CustomUtility.CalculateProjectileTime(currentVelocity, m_gravity);
+        var index = 0;
+
+        while (t > 0)
+        {
+            var intermediateVelocity = (isProjectile) ? CustomUtility.CalculateProjectileVelocity(currentVelocity, m_gravity, tempTime) : currentVelocity; // TODO: might need to calculate lerped velocity                                  
+            tempPos += intermediateVelocity;
+
+            m_line[index].SetActive(true);
+            m_line[index].transform.position = tempPos;
+            m_line[index].transform.forward = intermediateVelocity.normalized;
+
+            tempTime += m_debugIntervalTime;
+            t -= m_debugIntervalTime;
+            index++;
+        }
+
+        for (var i=index; i< m_line.Count; i++)
+        {
+            m_line[i].SetActive(false);
+        }
     }             
 }
