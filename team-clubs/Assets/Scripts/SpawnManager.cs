@@ -115,8 +115,8 @@ public class SpawnManager : MonoBehaviour
 
     void Spawn()
     {
-        var shuffledPositions = UtilityExtension.Shuffle(m_cellIndices); // pick random position
-        var shuffledFab = UtilityExtension.Shuffle(m_hoopPrefabs); // pick random prefab
+        var shuffledPositions = CustomUtility.Shuffle(m_cellIndices); // pick random position
+        var shuffledFab = CustomUtility.Shuffle(m_hoopPrefabs); // pick random prefab
 
         if (shuffledPositions.Count <= 0) return;               
 

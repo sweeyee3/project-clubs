@@ -8,6 +8,9 @@ using UnityEditor;
 public class CurveHandler : MonoBehaviour
 {
     [Header("Mobile Control Settings")]
+    [SerializeField] private Vector3 m_minRange;
+    [SerializeField] private Vector3 m_maxRange;
+
     [SerializeField] private Camera m_camera;
 
     [Header("Keyboard / Mouse Settings")]
@@ -27,8 +30,8 @@ public class CurveHandler : MonoBehaviour
 
     [SerializeField] private Vector3 m_gravity = new Vector3(0, -0.01f, 0);
 
-    [Header("Ball settings")]
-    [SerializeField] private GameObject m_ball;
+    [Header("Ball settings")]    
+    [SerializeField] private GameObject m_ballPrefab;
     [SerializeField] private Vector3 m_initialBallPosition = Vector3.zero;
 
     [Header("Bounce settings")]
@@ -52,6 +55,7 @@ public class CurveHandler : MonoBehaviour
     [SerializeField] private SpriteRenderer m_arrowSprite;
 
     [Header("Debug Settings")]
+    [SerializeField] private Ball m_debugBall;
     [SerializeField] private float m_debugIntervalTime = 0.01f;    
     [SerializeField] private float m_debugTotalTime;
 
@@ -63,18 +67,16 @@ public class CurveHandler : MonoBehaviour
 
     [Header("Calculated Settings")]
     [SerializeField] private float m_accmulatedBallTime = 0;
-    [SerializeField] private float m_accumulatedVertAngleTime = 0;
-    [SerializeField] private Vector3 m_currentVelocity;
-    [SerializeField] private int m_currentBounceCount;
-
-    [Header("Runtime Settings")]
-    [SerializeField] bool m_isMove;
+    [SerializeField] private float m_accumulatedVertAngleTime = 0;    
+    [SerializeField] private int m_currentBounceCount;   
     
     private Vector3 m_touchStartPos;
     private Vector3 m_touchCurrentPos;
     private bool m_isTapped;
 
     private List<GameObject> m_line;
+    private List<Ball> m_balls;
+    private Ball m_currentBall;
 
     public Vector3 InitialPosition
     {
@@ -106,20 +108,12 @@ public class CurveHandler : MonoBehaviour
             var initialVel = InitialInputSpeed;
 
             var forward = -Vector3.Slerp(Vector3.right, -Vector3.right, Mathf.Lerp(m_forwardAdjustmentRange.x, m_forwardAdjustmentRange.y, m_forwardAdjustment)).normalized;
-            float iv = UtilityExtension.InverseLerp(transform.forward, transform.up, initialVel.normalized);
+            float iv = CustomUtility.InverseLerp(transform.forward, transform.up, initialVel.normalized);
             var velocityDirection = Vector3.Slerp(forward, transform.up, iv);
 
             return velocityDirection * initialVel.magnitude;
         }
-    }
-    
-    public Vector3 CurrentVelocity
-    {
-        get
-        {
-            return m_currentVelocity;
-        }
-    }
+    }       
 
     public int CurrentBounceCount
     {
@@ -147,8 +141,16 @@ public class CurveHandler : MonoBehaviour
 
     private void Awake()
     {
+#if UNITY_EDITOR
+        if (!Application.isPlaying) m_debugBall.gameObject.SetActive(true);
+        else m_debugBall.gameObject.SetActive(false);
+#else
+        m_debugBall.gameObject.SetActive(false):
+#endif
         m_line = new List<GameObject>();
-        //m_currentVelocity = InitialProjectileVelocity;
+        m_balls = new List<Ball>();
+
+        m_currentBall = CreateBall(); // TODO: need to move to game state
     }
 
 #if UNITY_EDITOR
@@ -156,7 +158,8 @@ public class CurveHandler : MonoBehaviour
     {
         DrawProjectilePath();
 
-        MoveBall();
+        if (m_debugBall != null && !m_debugBall.isMoving) m_debugBall.Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);        
+        m_debugBall.Move(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity);
 
         var forward = -Vector3.Slerp(Vector3.right, -Vector3.right, m_forwardAdjustment).normalized;
         var velocityDirection = Vector3.Slerp(forward, m_throwUp, m_normalizedForwardSpeedAdjustment);
@@ -176,12 +179,12 @@ public class CurveHandler : MonoBehaviour
         var isProjectile = true;
 
         var currentVelocity = InitialProjectileVelocity;        
-        var t = CalculateProjectileTime(currentVelocity);
+        var t = CustomUtility.CalculateProjectileTime(currentVelocity, m_gravity);
         var additionalTime = t;
 
         while (t > 0)
         {
-            var intermediateVelocity = (isProjectile) ? CalculateProjectileVelocity(currentVelocity, m_gravity, tempTime) : currentVelocity; // TODO: might need to calculate lerped velocity           
+            var intermediateVelocity = (isProjectile) ? CustomUtility.CalculateProjectileVelocity(currentVelocity, m_gravity, tempTime) : currentVelocity; // TODO: might need to calculate lerped velocity           
             
             Gizmos.color = Color.magenta;
             Gizmos.DrawLine(tempPos, tempPos + intermediateVelocity);
@@ -212,7 +215,7 @@ public class CurveHandler : MonoBehaviour
                     // set new time
                     var prevAdditionalTime = additionalTime;
                     currentVelocity = hitReflection.normalized * (InitialInputSpeed.magnitude * m_normalizedVelocityReductionFactor);
-                    additionalTime = CalculateProjectileTime(currentVelocity);
+                    additionalTime = CustomUtility.CalculateProjectileTime(currentVelocity, m_gravity);
                     t += additionalTime - (prevAdditionalTime - tempTime);
 
                     tempPos = info.point;
@@ -261,10 +264,16 @@ public class CurveHandler : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.R))
         {
-            Reset();
+            foreach (var ball in m_balls)
+            {
+                Reset(ball);
+            }
+            m_balls.Clear();
+
+            m_currentBall = CreateBall();
         }
 
-        if (!m_isMove && GameManager.Instance.CurrentGameState == GameManager.EGameState.GAME)        
+        if (GameManager.Instance.CurrentGameState == GameManager.EGameState.GAME)        
         {
 #if UNITY_STANDALONE_WIN
 
@@ -289,7 +298,7 @@ public class CurveHandler : MonoBehaviour
                     case TouchPhase.Stationary:
                     case TouchPhase.Began:
                         RaycastHit info;
-                        Debug.Log(m_isTapped);
+                        
                         if (!m_isTapped && Physics.Raycast(m_camera.ScreenPointToRay(touch.position), out info, 999, 1 << LayerMask.NameToLayer("BallTap")))
                         {
                             m_touchStartPos = touch.position;
@@ -305,13 +314,14 @@ public class CurveHandler : MonoBehaviour
                             // TODO: smooth dx2 and dy2
 
                             // move horizontal axis
-                            var dx1 = Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x);
-                            var dx2 = Mathf.InverseLerp(-0.25f, 0.25f, dx1);
+
+                            var dx1 = Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x);                                                      
+                            var dx2 = Mathf.InverseLerp(m_minRange.x, m_maxRange.x, dx1); // this clamps 
                             m_forwardAdjustment = dx2;
 
                             // move vertical axis                            
                             var dy1 = Mathf.InverseLerp(m_touchStartPos.y, 0, m_touchCurrentPos.y);
-                            var dy2 = Mathf.InverseLerp(0, 0.5f, dy1);
+                            var dy2 = Mathf.InverseLerp(m_minRange.y, m_maxRange.y, dy1);
                             m_normalizedForwardSpeedAdjustment = dy2;
                         }
 
@@ -319,8 +329,12 @@ public class CurveHandler : MonoBehaviour
                     case TouchPhase.Ended:
                         if (m_isTapped)
                         {
-                            m_isMove = true;
-                            m_isTapped = false;
+                            m_currentBall.GetComponent<Ball>().Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);
+
+                            // remake ball
+                            m_currentBall = CreateBall();
+
+                            m_isTapped = false;                            
                         }
                         break;
                 }
@@ -339,8 +353,11 @@ public class CurveHandler : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.Space))
             {
                 // release ball
-                m_isMove = true;               
-                m_debugTotalTime = CalculateProjectileTime(InitialProjectileVelocity);
+                GameObject ballObj = Instantiate(m_ballPrefab);
+                m_balls.Add(ballObj.GetComponent<Ball>());
+                ballObj.GetComponent<Ball>().Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);
+                
+                m_debugTotalTime = CustomUtility.CalculateProjectileTime(InitialProjectileVelocity, m_gravity);
                 //m_currentVelocity = InitialProjectileVelocity;
             }
 
@@ -362,90 +379,29 @@ public class CurveHandler : MonoBehaviour
 
         if (m_isDisplayLine) RenderLine();
         if (m_isDisplayArrow) RenderArrow();
-    }
+    }   
 
-    private void FixedUpdate()
+    public void Reset(Ball ball)
     {
-        if (m_isMove)
-        {
-            MoveBall();
-            m_accmulatedBallTime += (Time.fixedDeltaTime * m_timeAcceleration);
-        }
-    }
-
-    public void Reset()
-    {
-        m_ball.transform.position = m_initialBallPosition;
-        m_isMove = false;
+        DestroyBall(ball);       
 
         m_accmulatedBallTime = 0;
         m_accumulatedVertAngleTime = 0;
         m_normalizedForwardSpeedAdjustment = 0;
-    }    
-
-    void MoveBall()
+    }
+    
+    Ball CreateBall()
     {
-        // Translate ball on path
-        var diff = m_initialBallPosition - transform.position;
-        
-        var debugAccumTime = 0.0f;
+        GameObject ballObj = Instantiate(m_ballPrefab);
+        m_balls.Add(ballObj.GetComponent<Ball>());
+        ballObj.transform.position = m_initialBallPosition;
+        return ballObj.GetComponent<Ball>();
+    }
 
-        var isProjectile = true;
-        var tempBounceCount = m_bounceCount;
-        var tempPos = m_accmulatedBallTime <= 0 ? m_initialBallPosition : m_initialBallPosition - diff;
-        var tempVel = InitialProjectileVelocity;
-
-        float tempTrajectoryChangeTime = 0;
-        //if (m_accmulatedBallTime <= 0) m_currentVelocity = InitialProjectileVelocity;
-
-        while (debugAccumTime < m_accmulatedBallTime)
-        {
-            var cVel = (isProjectile) ? CalculateProjectileVelocity(tempVel, m_gravity, debugAccumTime - tempTrajectoryChangeTime) : tempVel;            
-            RaycastHit info;
-            Vector3 hitPos = tempPos;
-            Vector3 hitReflection = cVel;            
-
-            if (tempBounceCount < 0) isProjectile = false;
-
-            bool isHit = Physics.Raycast(hitPos, hitReflection.normalized, out info, hitReflection.magnitude, m_bounceLayerMask);            
-            if (isHit && tempBounceCount > 0)
-            {
-                tempPos = info.point;
-                hitReflection = Vector3.Reflect(hitReflection.normalized, info.normal) * 99;                
-
-                // check dot product
-                var dot = Vector3.Dot(info.normal, Vector3.up);
-                if (dot >= 0.8f)
-                {
-                    // calculate new projectile velocity
-                    // set new time                    
-                    tempVel = hitReflection.normalized * (InitialInputSpeed.magnitude * m_normalizedVelocityReductionFactor);                    
-                    isProjectile = true;
-                    tempTrajectoryChangeTime = debugAccumTime;                                      
-                }
-                else
-                {
-                    // do another raycast, find new velocity
-                    // set new time
-                    
-                    hitReflection = (hitReflection.normalized + (m_gravity * m_normalizedGravityModulation));
-                    tempVel = hitReflection;                                       
-                    
-                    isProjectile = false;                                       
-                }                
-                tempBounceCount--;                
-            }
-            else
-            {                
-                tempPos += cVel; // TODO: find out why ball constantly toggles between 2 point when raycast hit                
-            }
-
-            debugAccumTime += m_debugIntervalTime;            
-        }
-
-        m_currentBounceCount = tempBounceCount;
-        m_currentVelocity = tempVel;
-        m_ball.transform.position = tempPos;
+    void DestroyBall(Ball ball)
+    {
+        m_balls.Remove(ball);
+        Destroy(ball.gameObject);
     }
 
     void RenderArrow()
@@ -460,38 +416,5 @@ public class CurveHandler : MonoBehaviour
     void RenderLine()
     {
         
-    }    
-
-    float CalculateProjectileTime(Vector3 v)
-    {       
-        var h = -Mathf.Pow(v.y, 2) / (2 * m_gravity.y);
-        var a = m_gravity.y;
-        var b = 2 * v.y;
-        var c = -2 * h;
-        var b2m4ac = (Mathf.Pow(b, 2) - 4 * a * c);
-        b2m4ac = b2m4ac < 0 ? 0 : b2m4ac;
-
-        var t1 = (-b + Mathf.Sqrt(b2m4ac)) / (2 * a);
-        var t2 = (-b - Mathf.Sqrt(b2m4ac)) / (2 * a);
-
-        var t = (t1 > 0) ? t1 : (t2 > 0) ? t2 : 0;
-        t *= 2;
-
-        return t;
-    }
-
-    Vector3 CalculateProjectileVelocity(Vector3 u, Vector3 a, float t, bool isZ = true)
-    {
-        var ux = isZ ? u.z : u.x;        
-        var ax = isZ ? a.z : a.x;
-
-        var uz = isZ ? u.x : u.z;
-        var az = isZ ? a.x : a.z;
-
-        var vx = ux + ax* t;
-        var vy = u.y + a.y * t;
-        var vz = uz + az * t;
-
-        return isZ ? new Vector3(vz, vy, vx) : new Vector3(vx, vy, vz);
-    }       
+    }             
 }

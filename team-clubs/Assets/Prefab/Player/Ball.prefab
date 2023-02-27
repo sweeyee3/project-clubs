@@ -99,6 +99,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7803744821125050258}
+  - component: {fileID: 4195633436266242014}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Untagged
@@ -124,6 +125,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4195633436266242014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7151100282654864709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fefb1ee3c24d83479dca5b87a5d65f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_timeAcceleration: 0.75
+  m_accmulatedBallTime: 0
+  m_timeStep: 0.01
+  m_isMoveBall: 0
+  m_currentBounceCount: 0
+  m_currentVelocity: {x: 0, y: 0, z: 0}
 --- !u!1001 &981193191928570221
 PrefabInstance:
   m_ObjectHideFlags: 0

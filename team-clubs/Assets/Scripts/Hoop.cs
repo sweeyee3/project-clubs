@@ -67,16 +67,14 @@ public class Hoop : MonoBehaviour
             bool isWithinTop = CrossSign(ovTop.normalized, topVector, transform.right) < 0;
             bool isInsideRadius = IsInsideCylinderRadius(transform.position, collide.transform.position, norm, m_radius);
             bool isOutsideInnerRadius = !IsInsideCylinderRadius(transform.position, collide.transform.position, norm, m_inner_radius);
-            bool isFromTop = IsFromTop(m_curveHandler.CurrentVelocity.normalized, m_hoopSuccess);
+            bool isFromTop = IsFromTop(collide.transform.parent.gameObject.GetComponent<Ball>().CurrentVelocity.normalized, m_hoopSuccess);
 
-            //Debug.Log(isWithinRight + ", " + isWithinLeft + ", " + isWithinBottom + ", " + isWithinTop + ", " + isInsideRadius + ", " + isOutsideInnerRadius + ", " + isFromTop);
+            //Debug.Log(isWithinRight + ", " + isWithinLeft + ", " + isWithinBottom + ", " + isWithinTop + ", " + isInsideRadius + ", " + isOutsideInnerRadius + ", " + isFromTop);            
 
-            if (isWithinRight && isWithinLeft && isWithinBottom && isInsideRadius && isOutsideInnerRadius && isFromTop && m_curveHandler.CurrentBounceCount < m_curveHandler.BounceCount)
-            {
-                Debug.Log("success!");
-
+            if (isWithinRight && isWithinLeft && isWithinBottom && isInsideRadius && isOutsideInnerRadius && isFromTop)
+            {                
                 GameManager.Instance.CurrentScore += 1;
-                m_curveHandler.Reset();
+                m_curveHandler.Reset(collide.transform.parent.gameObject.GetComponent<Ball>());
                 SpawnManager.Instance.Remove(this);
 
                 // TODO: spawn effects!
@@ -183,7 +181,7 @@ public class Hoop : MonoBehaviour
             bool isWithinTop = CrossSign(ovTop.normalized, topVector, transform.right) < 0;
             bool isInsideRadius = IsInsideCylinderRadius(transform.position, o.transform.position, norm, m_radius);
             bool isOutsideInnerRadius = !IsInsideCylinderRadius(transform.position, o.transform.position, norm, m_inner_radius);
-            bool isFromTop = IsFromTop(m_curveHandler.CurrentVelocity.normalized, m_hoopSuccess);
+            bool isFromTop = IsFromTop(o.transform.parent.gameObject.GetComponent<Ball>().CurrentVelocity.normalized, m_hoopSuccess);
 
             if (isWithinRight && isWithinLeft && isWithinBottom && isWithinTop && isInsideRadius && isOutsideInnerRadius && isFromTop) Handles.color = Color.green;
             else Handles.color = Color.red;

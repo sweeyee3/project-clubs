@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     }
 
     [Header("Managers")]
-    [SerializeField] private CurveHandler m_ball;
+    [SerializeField] private CurveHandler m_curveHandler;
     [SerializeField] private SpawnManager m_spawnManager;
 
     [Header("Difficulty setttings")]
@@ -77,8 +77,7 @@ public class GameManager : MonoBehaviour
             {
                 switch (value)
                 {
-                    case EGameState.GAME:
-                        m_ball.Reset();
+                    case EGameState.GAME:                        
                         m_spawnManager.Reset();
 
                         m_currentTime = m_startTime;

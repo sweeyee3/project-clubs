@@ -266,6 +266,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3905051719947563509}
     - target: {fileID: 1959359607630108141, guid: 7ff0729bbf403e041ab0c392dfbc78cf, type: 3}
+      propertyPath: m_debugBall
+      value: 
+      objectReference: {fileID: 688226108639855844}
+    - target: {fileID: 1959359607630108141, guid: 7ff0729bbf403e041ab0c392dfbc78cf, type: 3}
       propertyPath: m_lineParent
       value: 
       objectReference: {fileID: 5646418926903975080}
@@ -315,6 +319,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5646418928030396925}
     m_Modifications:
+    - target: {fileID: 4195633436266242014, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
+      propertyPath: m_isMoveBall
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7151100282654864709, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
       propertyPath: m_Name
       value: Ball
@@ -365,6 +373,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
+--- !u!114 &688226108639855844 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4195633436266242014, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}
+  m_PrefabInstance: {fileID: 3725870653195574074}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5803235909106200191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fefb1ee3c24d83479dca5b87a5d65f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5803235909106200191 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7151100282654864709, guid: 22a3deb8d7de5904b91281bdeb75bf7c, type: 3}

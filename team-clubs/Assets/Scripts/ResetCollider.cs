@@ -25,9 +25,8 @@ public class ResetCollider : MonoBehaviour
         foreach(var collide in collided)
         {
             if (collide.tag == "Ball")
-            {
-                Debug.Log("death");
-                m_curveHandler.Reset();
+            {                
+                m_curveHandler.Reset(collide.transform.parent.gameObject.GetComponent<Ball>());
             }
         }
     }    
