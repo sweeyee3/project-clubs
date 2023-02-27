@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject m_game;
     [SerializeField] private GameObject m_win;
     [SerializeField] private GameObject m_lose;
+    [SerializeField] private GameObject m_pauseMenu;
+    private bool gamePaused = false;
 
     [Header("Debug settings")]
     [SerializeField] private EGameState m_currentGameState;
@@ -177,5 +179,18 @@ public class GameManager : MonoBehaviour
         m_currentRound = 0;        
         
         CurrentGameState = EGameState.GAME;
+    }
+
+    public void Pause()
+    {
+        m_pauseMenu.SetActive(true);
+        gamePaused = !gamePaused;
+        if (!gamePaused)
+        {
+            m_pauseMenu.SetActive(false);
+        }
+        
+
+        Debug.Log("paused");
     }
 }
