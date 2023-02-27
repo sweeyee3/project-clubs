@@ -55,4 +55,5 @@ MonoBehaviour:
   m_ball: {fileID: 0}
   m_hoopPrefabs:
   - {fileID: 3248292207736956314, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
+  - {fileID: 5447783782207438797, guid: 006d8b5e3ca46fe448b0b99aae9e0e4b, type: 3}
   m_isDisplaySpawnGrid: 1

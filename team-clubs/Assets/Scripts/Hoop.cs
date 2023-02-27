@@ -7,6 +7,15 @@ using UnityEditor;
 
 public class Hoop : MonoBehaviour
 {
+    public enum EHoopType
+    {
+        STATIC,
+        MOVE_X,
+        MOVE_Y,
+        MOVE_Z
+    }
+
+    [SerializeField] private EHoopType m_hoopType;
     [SerializeField] private float m_hoopSuccess = 0.5f;    
 
     [SerializeField] private Vector3 m_boxSize;
@@ -30,6 +39,14 @@ public class Hoop : MonoBehaviour
         set
         {
             m_hoopGridIndex = value;
+        }
+    }
+
+    public EHoopType HoopType
+    {
+        get
+        {
+            return m_hoopType;
         }
     }
 
