@@ -47,8 +47,8 @@ MonoBehaviour:
   m_minRange: {x: -0.21, y: 0, z: 0}
   m_maxRange: {x: 0.21, y: 0.7, z: 0}
   m_camera: {fileID: 0}
-  m_forwardAdjustmentSpeed: 1
-  m_forwardSpeedAdjustmentSpeed: 1
+  m_forwardAdjustmentSpeed: 2
+  m_forwardSpeedAdjustmentSpeed: 2
   m_speedCurve:
     serializedVersion: 2
     m_Curve:
@@ -106,5 +106,4 @@ MonoBehaviour:
   m_throwUp: {x: 0, y: 1, z: 0}
   m_accmulatedBallTime: -0
   m_accumulatedVertAngleTime: 0
-  m_currentVelocity: {x: 0, y: 0, z: 0}
   m_currentBounceCount: 0

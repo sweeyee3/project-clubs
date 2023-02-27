@@ -158,8 +158,8 @@ public class CurveHandler : MonoBehaviour
     {
         DrawProjectilePath();
 
-        if (m_debugBall != null && !m_debugBall.isMoving) m_debugBall.Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);        
-        m_debugBall.Move(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity);
+        if (m_debugBall != null && !m_debugBall.isMoving) m_debugBall.Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);
+        if (m_debugBall != null) m_debugBall.Move(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity);
 
         var forward = -Vector3.Slerp(Vector3.right, -Vector3.right, m_forwardAdjustment).normalized;
         var velocityDirection = Vector3.Slerp(forward, m_throwUp, m_normalizedForwardSpeedAdjustment);
