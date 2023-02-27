@@ -4,6 +4,16 @@ using UnityEngine;
 
 public static class CustomUtility
 {
+#if UNITY_ANDROID && !UNITY_EDITOR
+    public static AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+    public static AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+    public static AndroidJavaObject vibrator = currentActivity.Call<AndroidJavaObject>("getSystemService", "vibrator");
+#else
+	public static AndroidJavaClass unityPlayer;
+	public static AndroidJavaObject currentActivity;
+	public static AndroidJavaObject vibrator;
+#endif
+
 	public static List<T> Shuffle<T>(this List<T> list)
 	{
 		List<T> l = new List<T>();
@@ -69,6 +79,33 @@ public static class CustomUtility
 		var vz = uz + az * t;
 
 		return isZ ? new Vector3(vz, vy, vx) : new Vector3(vx, vy, vz);
+	}
+
+	public static void Vibrate()
+	{
+		//if (isAndroid())
+		//	vibrator.Call("vibrate");
+		//else
+		//	Handheld.Vibrate();
+		Handheld.Vibrate();
+	}
+
+
+	public static void Vibrate(float milliseconds)
+	{
+		if (isAndroid())
+			vibrator.Call("vibrate", milliseconds);
+		else
+			Handheld.Vibrate();
+	}
+
+	private static bool isAndroid()
+	{
+#if UNITY_ANDROID && !UNITY_EDITOR
+	return true;
+#else
+		return false;
+#endif
 	}
 }
 

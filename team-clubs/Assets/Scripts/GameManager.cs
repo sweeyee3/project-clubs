@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Linq;
 using TMPro;
 
@@ -12,7 +13,8 @@ public class GameManager : MonoBehaviour
         START,
         GAME,
         WIN,
-        LOSE
+        LOSE,
+        PAUSE
     }
 
     [Header("Managers")]
@@ -32,7 +34,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject m_win;
     [SerializeField] private GameObject m_lose;
     [SerializeField] private GameObject m_pauseMenu;
-    private bool gamePaused = false;
+    [SerializeField] private GameObject m_startMenu;
+    [SerializeField] private Button m_pauseButton;
+    [SerializeField] private Button m_playButton;
 
     [Header("Debug settings")]
     [SerializeField] private EGameState m_currentGameState;
@@ -76,23 +80,34 @@ public class GameManager : MonoBehaviour
         set
         {
             if (m_currentGameState != value)
-            {
+            {               
+                // entering state
                 switch (value)
                 {
-                    case EGameState.GAME:                        
-                        m_spawnManager.Reset();
+                    case EGameState.START:
+                        m_game.SetActive(false);
+                        m_win.SetActive(false);
+                        m_lose.SetActive(false);
+                        m_pauseMenu.SetActive(false);
+                        m_startMenu.SetActive(true);
+                        break;
 
-                        m_currentTime = m_startTime;
-                        m_targetScore = (int)m_scoreDifficulty.Evaluate(m_currentRound);
-
+                    case EGameState.GAME:                                                
                         m_game.SetActive(true);
                         m_win.SetActive(false);
                         m_lose.SetActive(false);
+                        m_pauseMenu.SetActive(false);
+                        m_startMenu.SetActive(false);
+
+                        m_pauseButton.gameObject.SetActive(true);
+                        m_playButton.gameObject.SetActive(false);
                         break;
                     case EGameState.WIN:
                         m_game.SetActive(false);
                         m_win.SetActive(true);
                         m_lose.SetActive(false);
+                        m_pauseMenu.SetActive(false);
+                        m_startMenu.SetActive(false);
 
                         //string winScoreText = (m_currentScore < 10) ? "0" + m_currentScore.ToString() : m_currentScore.ToString();
                         string winScoreText = m_currentScore.ToString();
@@ -102,10 +117,17 @@ public class GameManager : MonoBehaviour
                         m_game.SetActive(false);
                         m_win.SetActive(false);
                         m_lose.SetActive(true);
+                        m_pauseMenu.SetActive(false);
+                        m_startMenu.SetActive(false);
 
                         //string loseScoreText = (m_currentScore < 10) ? "0" + m_currentScore.ToString() : m_currentScore.ToString();
                         string loseScoreText = m_currentScore.ToString();
                         m_loseScore.text = loseScoreText + " points";
+                        break;
+                    case EGameState.PAUSE:
+                        m_pauseMenu.SetActive(true);
+                        m_pauseButton.gameObject.SetActive(false);
+                        m_playButton.gameObject.SetActive(true);
                         break;
                 }
             }
@@ -130,22 +152,22 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         m_instance = this;
-        CurrentGameState = EGameState.GAME;
+        CurrentGameState = EGameState.START;
     }
 
     private void Update()
     {
-        m_currentTime -= Time.deltaTime;
-        if (m_currentTime <= 0)
-        {
-            // check score and target score. set win or lose depending on score
-            if (m_currentScore >= m_targetScore) CurrentGameState = EGameState.WIN;
-            else CurrentGameState = EGameState.LOSE;
-        }        
-
         switch (CurrentGameState)
         {
             case EGameState.GAME:
+                m_currentTime -= Time.deltaTime;
+                if (m_currentTime <= 0)
+                {
+                    // check score and target score. set win or lose depending on score
+                    if (m_currentScore >= m_targetScore) CurrentGameState = EGameState.WIN;
+                    else CurrentGameState = EGameState.LOSE;
+                }
+                
                 m_gameScore.text = m_currentScore.ToString();
 
                 int minute = Mathf.FloorToInt(m_currentTime / 60);
@@ -164,10 +186,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void StartGame()
+    {
+        m_currentScore = 0;
+        m_currentRound = 0;
+
+        Restart();
+
+        CurrentGameState = EGameState.GAME;
+    }
+
     public void NextRound()
     {        
         m_currentScore = 0;
-        m_currentRound++;        
+        m_currentRound++;
+
+        m_curveHandler.ResetAll();
+        m_spawnManager.Reset();
+
+        m_currentTime = m_startTime;
+        m_targetScore = (int)m_scoreDifficulty.Evaluate(m_currentRound);
 
         CurrentGameState = EGameState.GAME;
     }
@@ -175,21 +213,29 @@ public class GameManager : MonoBehaviour
     public void Restart()
     {        
         m_currentScore = 0;
-        m_currentRound = 0;        
-        
+        m_currentRound = 0;
+
+        m_curveHandler.ResetAll();
+        m_spawnManager.Reset();
+
+        m_currentTime = m_startTime;
+        m_targetScore = (int)m_scoreDifficulty.Evaluate(m_currentRound);
+
         CurrentGameState = EGameState.GAME;
     }
 
     public void Pause()
     {
-        m_pauseMenu.SetActive(true);
-        gamePaused = !gamePaused;
-        if (!gamePaused)
-        {
-            m_pauseMenu.SetActive(false);
-        }
-        
+        CurrentGameState = EGameState.PAUSE;                       
+    }
 
-        Debug.Log("paused");
+    public void UnPause()
+    {
+        CurrentGameState = EGameState.GAME;
+    }
+
+    public void BackToStart()
+    {
+        CurrentGameState = EGameState.START;
     }
 }

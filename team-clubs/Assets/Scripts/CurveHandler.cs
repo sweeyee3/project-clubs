@@ -65,8 +65,7 @@ public class CurveHandler : MonoBehaviour
     [SerializeField] private float m_timeAcceleration = 5;
     [SerializeField] private Vector3 m_throwUp = new Vector3(0, 1, 0);
 
-    [Header("Calculated Settings")]
-    [SerializeField] private float m_accmulatedBallTime = 0;
+    [Header("Calculated Settings")]    
     [SerializeField] private float m_accumulatedVertAngleTime = 0;    
     [SerializeField] private int m_currentBounceCount;   
     
@@ -145,12 +144,10 @@ public class CurveHandler : MonoBehaviour
         if (!Application.isPlaying) m_debugBall.gameObject.SetActive(true);
         else m_debugBall.gameObject.SetActive(false);
 #else
-        m_debugBall.gameObject.SetActive(false):
+        m_debugBall.gameObject.SetActive(false);
 #endif
         m_line = new List<GameObject>();
-        m_balls = new List<Ball>();
-
-        m_currentBall = CreateBall(); // TODO: need to move to game state
+        m_balls = new List<Ball>();        
     }
 
 #if UNITY_EDITOR
@@ -264,12 +261,7 @@ public class CurveHandler : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.R))
         {
-            foreach (var ball in m_balls)
-            {
-                Reset(ball);
-            }
-            m_balls.Clear();
-
+            ResetAll();
             m_currentBall = CreateBall();
         }
 
@@ -375,27 +367,48 @@ public class CurveHandler : MonoBehaviour
             {
                 m_forwardAdjustment = Mathf.Clamp(m_forwardAdjustment + m_forwardAdjustmentSpeed * Time.deltaTime, 0, 1);
             }
+            if (m_isDisplayLine) RenderLine();
+            if (m_isDisplayArrow) RenderArrow();
         }             
-
-        if (m_isDisplayLine) RenderLine();
-        if (m_isDisplayArrow) RenderArrow();
     }   
 
     public void Reset(Ball ball)
     {
         DestroyBall(ball);       
-
-        m_accmulatedBallTime = 0;
+        
         m_accumulatedVertAngleTime = 0;
         m_normalizedForwardSpeedAdjustment = 0;
     }
     
+    public void ResetAll()
+    {
+        var count = m_balls.Count - 1;
+        while (count >= 0)
+        {
+            DestroyBall(m_balls.Count - 1);
+            count--;
+        }        
+        
+        m_accumulatedVertAngleTime = 0;
+        m_normalizedForwardSpeedAdjustment = 0;
+        m_balls.Clear();
+
+        m_currentBall = CreateBall();
+    }
+
     Ball CreateBall()
     {
         GameObject ballObj = Instantiate(m_ballPrefab);
         m_balls.Add(ballObj.GetComponent<Ball>());
         ballObj.transform.position = m_initialBallPosition;
         return ballObj.GetComponent<Ball>();
+    }
+
+    void DestroyBall(int index)
+    {
+        var b = m_balls[index];
+        m_balls.RemoveAt(index);
+        Destroy(b.gameObject);
     }
 
     void DestroyBall(Ball ball)

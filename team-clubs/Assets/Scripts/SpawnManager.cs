@@ -137,6 +137,7 @@ public class SpawnManager : MonoBehaviour
     {
         // spawn hoop effect here
         StartCoroutine(SpawnEffect(m_effectPrefab, hoop.transform.parent.position));
+        CustomUtility.Vibrate();
         m_cellIndices.Add(hoop.HoopGridIndex);
         m_hoopInstances.Remove(hoop);
         Destroy(hoop.transform.parent.gameObject);
