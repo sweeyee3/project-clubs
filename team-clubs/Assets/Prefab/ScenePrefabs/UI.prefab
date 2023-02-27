@@ -111,6 +111,38 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6046289682877704733}
     m_Modifications:
+    - target: {fileID: 2188979831909216232, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -1099.5555
+      objectReference: {fileID: 0}
+    - target: {fileID: 3038987808727487647, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3038987808727487647, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3038987808727487647, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Pause
+      objectReference: {fileID: 0}
+    - target: {fileID: 3038987808727487647, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GameManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3038987808727487647, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240717851993991615, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -954236780005057208, guid: c3c07d089a08cac48a25ba428a4017c8, type: 2}
+    - target: {fileID: 5240717852371767738, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -954236780005057208, guid: c3c07d089a08cac48a25ba428a4017c8, type: 2}
     - target: {fileID: 5240717852737651216, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
       propertyPath: m_Name
       value: Game
@@ -315,7 +347,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3927919266376279070, guid: 47ca72dd823e9824a9dc390eb67b49bf, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9021208584684590044, guid: 47ca72dd823e9824a9dc390eb67b49bf, type: 3}
@@ -433,6 +465,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6046289682877704733}
     m_Modifications:
+    - target: {fileID: 3919872110835337721, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3919872110835337721, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3919872111444914799, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -524,6 +564,14 @@ PrefabInstance:
     - target: {fileID: 3919872111444914832, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3919872111898266855, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3919872111898266855, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
@@ -631,6 +679,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2917472239159185242, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c3c07d089a08cac48a25ba428a4017c8, type: 2}
+    - target: {fileID: 2917472239159185242, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -954236780005057208, guid: c3c07d089a08cac48a25ba428a4017c8, type: 2}
+    - target: {fileID: 2917472239795631744, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c3c07d089a08cac48a25ba428a4017c8, type: 2}
+    - target: {fileID: 2917472239795631744, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -954236780005057208, guid: c3c07d089a08cac48a25ba428a4017c8, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
 --- !u!224 &6046289684324447511 stripped
