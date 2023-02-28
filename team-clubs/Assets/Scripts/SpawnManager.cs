@@ -157,14 +157,10 @@ public class SpawnManager : MonoBehaviour
                     SpawnPair pair;
                     pair.Fab = tempSpawnPair[i].Fab;
                     pair.CellIndex = tempSpawnPair[i].CellIndex;
-                    spawns.Add(pair);
-                    
-                    Debug.Log("static: " + tempSpawnPair[i].CellIndex.x + ", " + tempSpawnPair[i].CellIndex.y + ", " + tempSpawnPair[i].CellIndex.z);
+                    spawns.Add(pair);                                       
                     break;
                 case Hoop.EHoopType.MOVE_X:                    
-                    var item = spawns.Find(x => ((x.CellIndex.z == tempSpawnPair[i].CellIndex.z) && (x.CellIndex.y == tempSpawnPair[i].CellIndex.y) && (x.CellIndex.x == tempSpawnPair[i].CellIndex.x - 1 || x.CellIndex.x == tempSpawnPair[i].CellIndex.x + 1)));
-                    if (item.Fab != null) Debug.Log("taken: " + item.CellIndex.x + ", " + item.CellIndex.y + ", " + item.CellIndex.z);
-                    else Debug.Log("not taken: " + tempSpawnPair[i].CellIndex.x + ", " + tempSpawnPair[i].CellIndex.y + ", " + tempSpawnPair[i].CellIndex.z);
+                    var item = spawns.Find(x => ((x.CellIndex.z == tempSpawnPair[i].CellIndex.z) && (x.CellIndex.y == tempSpawnPair[i].CellIndex.y) && (x.CellIndex.x == tempSpawnPair[i].CellIndex.x - 1 || x.CellIndex.x == tempSpawnPair[i].CellIndex.x + 1)));                    
 
                     if (item.Fab == null)
                     {                        
@@ -203,6 +199,7 @@ public class SpawnManager : MonoBehaviour
     {
         // spawn hoop effect here
         StartCoroutine(SpawnEffect(m_effectPrefab, hoop.transform.parent.position));
+        AudioManager.Instance.Play("ballSuccess", AudioManager.EAudioType.SFX);
         CustomUtility.Vibrate();
         m_cellIndices.Add(hoop.HoopGridIndex);
         m_hoopInstances.Remove(hoop);

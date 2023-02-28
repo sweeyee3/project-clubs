@@ -332,6 +332,7 @@ public class CurveHandler : MonoBehaviour
                     case TouchPhase.Ended:
                         if (m_isTapped)
                         {
+                            AudioManager.Instance.Play("ballToss", AudioManager.EAudioType.SFX);
                             m_currentBall.GetComponent<Ball>().Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);
 
                             // remake ball
@@ -366,6 +367,7 @@ public class CurveHandler : MonoBehaviour
                 m_normalizedForwardSpeedAdjustment = 0;
                 m_accumulatedVertAngleTime = 0;
                 //m_currentVelocity = InitialProjectileVelocity;
+                AudioManager.Instance.Play("ballToss", AudioManager.EAudioType.SFX);
             }
 
             if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))

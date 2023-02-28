@@ -104,7 +104,7 @@ public class Ball : MonoBehaviour
 
             bool isHit = Physics.Raycast(hitPos, hitReflection.normalized, out info, hitReflection.magnitude, m_bounceLayerMask);
             if (isHit && tempBounceCount > 0)
-            {
+            {                
                 tempPos = info.point;
                 hitReflection = Vector3.Reflect(hitReflection.normalized, info.normal) * 99;
 
@@ -117,6 +117,8 @@ public class Ball : MonoBehaviour
                     tempVel = hitReflection.normalized * (initialSpeed.magnitude * m_normalizedVelocityReductionFactor);
                     isProjectile = true;
                     tempTrajectoryChangeTime = debugAccumTime;
+
+                    AudioManager.Instance.Play("ballBounce", AudioManager.EAudioType.SFX);
                 }
                 else
                 {
@@ -127,8 +129,9 @@ public class Ball : MonoBehaviour
                     tempVel = hitReflection;
 
                     isProjectile = false;
+                    AudioManager.Instance.Play("ballHitBoard", AudioManager.EAudioType.SFX);
                 }
-                tempBounceCount--;
+                tempBounceCount--;                
             }
             else
             {

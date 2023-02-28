@@ -90,6 +90,10 @@ public class GameManager : MonoBehaviour
                         m_lose.SetActive(false);
                         m_pauseMenu.SetActive(false);
                         m_startMenu.SetActive(true);
+
+                        AudioManager.Instance.Play("startBGM", AudioManager.EAudioType.BGM);
+                        AudioManager.Instance.Stop("gameBGM", AudioManager.EAudioType.BGM);
+                        AudioManager.Instance.Stop("gameTimeUp", AudioManager.EAudioType.SFX);
                         break;
 
                     case EGameState.GAME:                                                
@@ -101,6 +105,10 @@ public class GameManager : MonoBehaviour
 
                         m_pauseButton.gameObject.SetActive(true);
                         m_playButton.gameObject.SetActive(false);
+
+                        AudioManager.Instance.Play("gameBGM", AudioManager.EAudioType.BGM);
+                        AudioManager.Instance.Stop("startBGM", AudioManager.EAudioType.BGM);
+                        AudioManager.Instance.Stop("gameTimeUp", AudioManager.EAudioType.SFX);
                         break;
                     case EGameState.WIN:
                         m_game.SetActive(false);
@@ -112,6 +120,8 @@ public class GameManager : MonoBehaviour
                         //string winScoreText = (m_currentScore < 10) ? "0" + m_currentScore.ToString() : m_currentScore.ToString();
                         string winScoreText = m_currentScore.ToString();
                         m_winScore.text = winScoreText + " points";
+
+                        AudioManager.Instance.Play("gameTimeUp", AudioManager.EAudioType.SFX);
                         break;
                     case EGameState.LOSE:
                         m_game.SetActive(false);
@@ -123,11 +133,16 @@ public class GameManager : MonoBehaviour
                         //string loseScoreText = (m_currentScore < 10) ? "0" + m_currentScore.ToString() : m_currentScore.ToString();
                         string loseScoreText = m_currentScore.ToString();
                         m_loseScore.text = loseScoreText + " points";
+
+                        AudioManager.Instance.Play("gameTimeUp", AudioManager.EAudioType.SFX);
                         break;
-                    case EGameState.PAUSE:
+                    case EGameState.PAUSE:                        
                         m_pauseMenu.SetActive(true);
                         m_pauseButton.gameObject.SetActive(false);
                         m_playButton.gameObject.SetActive(true);
+
+                        AudioManager.Instance.Stop("gameBGM", AudioManager.EAudioType.BGM);
+                        AudioManager.Instance.Play("startBGM", AudioManager.EAudioType.BGM);
                         break;
                 }
             }

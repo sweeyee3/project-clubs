@@ -92,11 +92,7 @@ public class Hoop : MonoBehaviour
             {                
                 GameManager.Instance.CurrentScore += 1;
                 m_curveHandler.Reset(collide.transform.parent.gameObject.GetComponent<Ball>());
-                SpawnManager.Instance.Remove(this);
-
-                // TODO: spawn effects!
-
-                // TODO: music effects!
+                SpawnManager.Instance.Remove(this);               
             }
         }        
     }
