@@ -361,6 +361,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 688226108639855844, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_isMoveBall
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 688226108639855844, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_currentVelocity.x
+      value: 0.000000027007799
+      objectReference: {fileID: 0}
+    - target: {fileID: 688226108639855844, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_currentVelocity.y
+      value: 0.7507741
+      objectReference: {fileID: 0}
+    - target: {fileID: 688226108639855844, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_currentVelocity.z
+      value: 0.6178664
+      objectReference: {fileID: 0}
     - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
       propertyPath: m_camera
       value: 
@@ -368,6 +384,14 @@ PrefabInstance:
     - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
       propertyPath: m_xVelRange
       value: 0.64
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_maxRange.x
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
+      propertyPath: m_minRange.x
+      value: -0.25
       objectReference: {fileID: 0}
     - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
       propertyPath: m_distanceRange
@@ -412,10 +436,6 @@ PrefabInstance:
     - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
       propertyPath: m_normalizedDistanceAdjustment
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2973042671277094621, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
-      propertyPath: m_normalizedForwardSpeedAdjustment
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5646418928030396924, guid: 14cd758f6f4e3ab46ac2d7f2801f4bd9, type: 3}
       propertyPath: m_Name

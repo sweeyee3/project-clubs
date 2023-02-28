@@ -167,13 +167,7 @@ public class SpawnManager : MonoBehaviour
                         pair.Fab = tempSpawnPair[i].Fab;
                         pair.CellIndex = tempSpawnPair[i].CellIndex;
                         spawns.Add(pair);
-                    }
-                    //else
-                    //{                        
-                    //    pair.Fab = shuffledFab.Find( x => x.GetComponentInChildren<Hoop>().HoopType == Hoop.EHoopType.STATIC ); // if x direction already has a spawn, spawn a static one instead
-                    //    pair.CellIndex = tempSpawnPair[i].CellIndex;
-                    //    spawns.Add(pair);
-                    //}
+                    }                    
                     break;
             }
             

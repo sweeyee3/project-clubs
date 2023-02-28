@@ -10,6 +10,7 @@ public class CurveHandler : MonoBehaviour
     [Header("Mobile Control Settings")]
     [SerializeField] private Vector3 m_minRange;
     [SerializeField] private Vector3 m_maxRange;
+    [SerializeField] private Vector3 m_normalizedSquareSmoothingFactor = new Vector3(0.4f, 0.4f, 0);
 
     [SerializeField] private Camera m_camera;
 
@@ -312,20 +313,19 @@ public class CurveHandler : MonoBehaviour
                     case TouchPhase.Moved:
                         if (m_isTapped)
                         {
-                            m_touchCurrentPos = touch.position;
-
-                            // TODO: smooth dx2 and dy2
+                            m_touchCurrentPos = touch.position;                            
 
                             // move horizontal axis
-
                             var dx1 = Mathf.InverseLerp(0, Screen.width, m_touchStartPos.x) - Mathf.InverseLerp(0, Screen.width, m_touchCurrentPos.x);                                                      
-                            var dx2 = Mathf.InverseLerp(m_minRange.x, m_maxRange.x, dx1); // this clamps 
-                            m_forwardAdjustment = dx2;
+                            var dx2 = Mathf.InverseLerp(m_minRange.x, m_maxRange.x, dx1); // this clamps                             
+                            m_forwardAdjustment = Mathf.Lerp(m_forwardAdjustment, dx2, m_normalizedSquareSmoothingFactor.x);
 
-                            // move vertical axis                            
-                            var dy1 = Mathf.InverseLerp(m_touchStartPos.y, 0, m_touchCurrentPos.y);
-                            var dy2 = Mathf.InverseLerp(m_minRange.y, m_maxRange.y, dy1);
-                            m_normalizedForwardSpeedAdjustment = dy2;
+                            // move vertical axis
+                            var ydist = m_touchStartPos.y;
+                            var dy1 = Mathf.InverseLerp(m_touchStartPos.y, m_touchStartPos.y - ( ydist * m_maxRange.y ), m_touchCurrentPos.y);
+
+                            // do a slowing lerp towards target every frame                                                        
+                            m_normalizedForwardSpeedAdjustment = Mathf.Lerp(m_normalizedForwardSpeedAdjustment, dy1, m_normalizedSquareSmoothingFactor.y);
                         }
 
                         break;
