@@ -32,9 +32,9 @@ public class SpawnManager : MonoBehaviour
 
     [Header("Debug Settings")]
     [SerializeField] private bool m_isDisplaySpawnGrid = true;
+    [SerializeField] private List<Vector3> m_cellIndices;
 
     private List<Hoop> m_hoopInstances;
-    private List<Vector3> m_cellIndices;
 
     private Coroutine m_spawnRoutine;
 
@@ -160,8 +160,10 @@ public class SpawnManager : MonoBehaviour
             sp.CellIndex = cellIdx;
             sp.Fab = fab;
             tempSpawnPair.Add(sp);
-            
-            m_cellIndices.Remove(cellIdx);
+
+            //m_cellIndices.Remove(cellIdx);
+            shuffledPositions.RemoveAt(0);
+            m_cellIndices = shuffledPositions;
             
             count--;
         }
@@ -250,15 +252,7 @@ public class SpawnManager : MonoBehaviour
                 Destroy(hoop.transform.parent.gameObject);
             }
             m_hoopInstances.Clear();
-        }
-
-        // spawn again
-        var spawnCount = Random.Range(GameManager.Instance.GetMinSpawnCount(), GameManager.Instance.GetMaxSpawnCount());
-        List<SpawnPair> pairs = Generate(spawnCount);
-        foreach (var pair in pairs)
-        {
-            Spawn(pair.Fab, pair.CellIndex);
-        }
+        }        
 
         if (m_cellIndices != null)
         {
@@ -274,6 +268,14 @@ public class SpawnManager : MonoBehaviour
                     }
                 }
             }
+        }
+
+        // spawn again
+        var spawnCount = Random.Range(GameManager.Instance.GetMinSpawnCount(), GameManager.Instance.GetMaxSpawnCount());
+        List<SpawnPair> pairs = Generate(spawnCount);
+        foreach (var pair in pairs)
+        {
+            Spawn(pair.Fab, pair.CellIndex);
         }
     }
 
