@@ -14,6 +14,7 @@ public class MovingHoop : MonoBehaviour
     private bool goingLeft = true;
     public float posThreshold = 0.1f;
     public float movingSpeed = 2.0f;
+
     private void Start()
     {
         Vector3 gridIndex = GetComponentInChildren<Hoop>().CellIndex;

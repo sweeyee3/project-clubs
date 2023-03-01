@@ -23,22 +23,22 @@ public class GameManager : MonoBehaviour
     [SerializeField] private SpawnManager m_spawnManager;
 
     [Header("Score setttings")]
-    [SerializeField] private AnimationCurve m_scoreDifficulty;
-    [SerializeField] private AnimationCurve m_setTimeIncrement;
-    [SerializeField] private AnimationCurve m_hoopScoreIncrement;
-    [SerializeField] private float m_startTime = 30;
+    [SerializeField][Tooltip("x-axis: Number of rounds, y-axis: target score to pass round")] private AnimationCurve m_scoreDifficulty;
+    [SerializeField][Tooltip("x-axis: Number of rounds, y-axis: time increment for every set of hoops cleared")] private AnimationCurve m_setTimeIncrement;
+    [SerializeField][Tooltip("x-axis: Hoop distance from player, y-axis: score player receives")] private AnimationCurve m_hoopScoreIncrement;
+    [SerializeField][Tooltip("Initial start time of every round")] private float m_startTime = 30;
 
     [Header("Spawn difficulty settings")]
-    [SerializeField] private AnimationCurve m_minSpawnCount;
-    [SerializeField] private AnimationCurve m_maxSpawnCount;
+    [SerializeField][Tooltip("x-axis: Number of rounds, y-axis: minimum number of boards")] private AnimationCurve m_minSpawnCount;
+    [SerializeField][Tooltip("x-axis: Number of rounds, y-axis: maximum number of boards")] private AnimationCurve m_maxSpawnCount;
 
-    [Header("Distance difficulty settings")]
+    [Header("(NOT IN USE) Distance difficulty settings")]
     [SerializeField] private AnimationCurve m_distanceSpawnProbabilityMin;
     [SerializeField] private AnimationCurve m_distanceSpawnProbabilityMax;
     [SerializeField] private AnimationCurve m_distanceRoundSpawnProbability;
 
     [Header("Spawn type difficulty settings")]
-    [SerializeField] private List<AnimationCurve> m_hoopSpawnProbability;
+    [SerializeField][Tooltip("x-axis: number of rounds, y-axis: probability of hoop type spawning")] private List<AnimationCurve> m_hoopSpawnProbability;
 
     [Header("UI settings")]
     [SerializeField] private TextMeshProUGUI m_gameScore;

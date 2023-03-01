@@ -255,7 +255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fefb1ee3c24d83479dca5b87a5d65f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_timeAcceleration: 0.75
+  m_timeAcceleration: 0.1
   m_accmulatedBallTime: 0
   m_timeStep: 0.01
   m_isMoveBall: 0

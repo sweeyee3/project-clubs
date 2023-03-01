@@ -46,6 +46,12 @@ public class CurveHandler : MonoBehaviour
     [SerializeField] private float m_lineDotInterval = 0.5f;
     [SerializeField] private GameObject m_lineDotPrefab;
     [SerializeField] private Transform m_lineParent;
+
+    [SerializeField] private bool m_lineShowTarget = false;
+    [SerializeField] private Transform m_lineTarget;
+    [SerializeField] private Vector3 m_lineTargetOffset;
+    
+    [SerializeField] private LayerMask m_lineTargetMask;
     [SerializeField] private int m_lineMaxDots = 50;
 
     [Header("Arrow settings")]
@@ -113,7 +119,7 @@ public class CurveHandler : MonoBehaviour
 
             return velocityDirection * initialVel.magnitude;
         }
-    }       
+    }           
 
     public int CurrentBounceCount
     {
@@ -165,7 +171,7 @@ public class CurveHandler : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        DrawProjectilePath();
+        DrawProjectilePath();        
 
         if (m_debugBall != null && !m_debugBall.isMoving) m_debugBall.Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);
         if (m_debugBall != null) m_debugBall.Move(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity);
@@ -450,6 +456,8 @@ public class CurveHandler : MonoBehaviour
         var t = CustomUtility.CalculateProjectileTime(currentVelocity, m_gravity);
         var index = 0;
 
+        var stoppedVelocity = InitialProjectileVelocity;
+
         while (t > 0)
         {
             var intermediateVelocity = (isProjectile) ? CustomUtility.CalculateProjectileVelocity(currentVelocity, m_gravity, tempTime) : currentVelocity; // TODO: might need to calculate lerped velocity                                  
@@ -459,6 +467,17 @@ public class CurveHandler : MonoBehaviour
             m_line[index].transform.position = tempPos;
             m_line[index].transform.forward = intermediateVelocity.normalized;
 
+            if (m_lineShowTarget)
+            {
+                RaycastHit tSignHit;
+                if (Physics.Raycast(tempPos, intermediateVelocity, out tSignHit, intermediateVelocity.magnitude, m_lineTargetMask))
+                {
+                    stoppedVelocity = intermediateVelocity;
+                    break;
+                }
+            }
+
+            m_lineTarget.transform.gameObject.SetActive(false);
             tempTime += m_debugIntervalTime;
             t -= m_debugIntervalTime;
             index++;
@@ -467,6 +486,23 @@ public class CurveHandler : MonoBehaviour
         for (var i=index; i< m_line.Count; i++)
         {
             m_line[i].SetActive(false);
+        }
+
+        if (m_lineShowTarget)
+        {
+            var totalTime = CustomUtility.CalculateProjectileTime(stoppedVelocity, m_gravity);
+            var vy = stoppedVelocity.y + (m_gravity.y * totalTime);
+            var vx = stoppedVelocity.x;
+
+            var v = m_isXDirectionForward ? new Vector3(0, vy, vx) : new Vector3(vx, vy, 0);
+        
+            RaycastHit targetSignHit;
+            if (Physics.Raycast(tempPos, v, out targetSignHit, 99, m_lineTargetMask))
+            {
+                m_lineTarget.transform.gameObject.SetActive(true);
+                m_lineTarget.transform.position = targetSignHit.point + m_lineTargetOffset;
+                m_lineTarget.transform.forward = targetSignHit.normal;            
+            }
         }
     }             
 }
