@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_addedTimer;
     [SerializeField] private TextMeshProUGUI m_roundText;
     [SerializeField] private TextMeshProUGUI m_clearedText;
+    [SerializeField] private TextMeshProUGUI m_finalStage;
     [SerializeField] private GameObject m_game;
     [SerializeField] private GameObject m_win;
     [SerializeField] private GameObject m_lose;
@@ -164,6 +165,7 @@ public class GameManager : MonoBehaviour
                         //string loseScoreText = (m_currentScore < 10) ? "0" + m_currentScore.ToString() : m_currentScore.ToString();
                         string loseScoreText = m_currentScore.ToString();
                         m_loseScore.text = loseScoreText + " points";
+                        m_finalStage.text = "stage " + (m_currentRound + 1).ToString();
 
                         AudioManager.Instance.Play("gameTimeUp", AudioManager.EAudioType.SFX);
                         break;
