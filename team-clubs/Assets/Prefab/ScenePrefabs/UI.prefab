@@ -111,6 +111,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6046289682877704733}
     m_Modifications:
+    - target: {fileID: 467756446014072631, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297775322487101717, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2188979831909216232, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -1099.5555
@@ -202,6 +210,10 @@ PrefabInstance:
     - target: {fileID: 4501944030056871404, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: GameManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111065970097621452, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5240717851993991615, guid: a962f0bf5cf911f40a1b03cd3ede4da3, type: 3}
       propertyPath: m_sharedMaterial
@@ -479,7 +491,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3927919266376279070, guid: 47ca72dd823e9824a9dc390eb67b49bf, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6832243546687916872, guid: 47ca72dd823e9824a9dc390eb67b49bf, type: 3}
       propertyPath: m_Color.b
@@ -616,6 +628,10 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3919872112147494224, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b27f0b5e3b2a5d45952e0095ce40dce, type: 3}
 --- !u!224 &6046289682603026962 stripped
@@ -730,6 +746,10 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: -954236780005057208, guid: c3c07d089a08cac48a25ba428a4017c8, type: 2}
+    - target: {fileID: 2917472239691829845, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2917472239795631744, guid: a4e313a8f3a76c042bea4c07b3adc271, type: 3}
       propertyPath: m_fontAsset
       value: 

@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AnimationCurve m_hoopScoreIncrement;
     [SerializeField] private float m_startTime = 30;
 
-    [Header("Spawn difficulty settings")]    
+    [Header("Spawn difficulty settings")]
     [SerializeField] private AnimationCurve m_minSpawnCount;
     [SerializeField] private AnimationCurve m_maxSpawnCount;
 
@@ -46,6 +46,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_winScore;
     [SerializeField] private TextMeshProUGUI m_loseScore;
     [SerializeField] private TextMeshProUGUI m_addedTimer;
+    [SerializeField] private TextMeshProUGUI m_roundText;
+    [SerializeField] private TextMeshProUGUI m_clearedText;
     [SerializeField] private GameObject m_game;
     [SerializeField] private GameObject m_win;
     [SerializeField] private GameObject m_lose;
@@ -147,6 +149,7 @@ public class GameManager : MonoBehaviour
 
                         //string winScoreText = (m_currentScore < 10) ? "0" + m_currentScore.ToString() : m_currentScore.ToString();
                         string winScoreText = m_currentScore.ToString();
+                        m_clearedText.text = "stage " + (m_currentRound+1).ToString() + " cleared!";  
                         m_winScore.text = winScoreText + " points";
 
                         AudioManager.Instance.Play("gameTimeUp", AudioManager.EAudioType.SFX);
@@ -219,6 +222,9 @@ public class GameManager : MonoBehaviour
                 string minuteText = (minute < 10) ? "0" + minute.ToString() : minute.ToString();
                 string secondsText = (seconds < 10) ? "0" + seconds.ToString() : seconds.ToString();
                 m_gameTimer.text = minuteText + ":" + secondsText;
+
+                //Display current round
+                m_roundText.text = "stage " + (m_currentRound+1).ToString();
 
                 // TODO: display score
                 string scoreText = (m_currentScore < 10) ? "0" + m_currentScore.ToString() : m_currentScore.ToString();
