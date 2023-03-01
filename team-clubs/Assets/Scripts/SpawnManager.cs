@@ -36,6 +36,8 @@ public class SpawnManager : MonoBehaviour
     private List<Hoop> m_hoopInstances;
     private List<Vector3> m_cellIndices;
 
+    private Coroutine m_spawnRoutine;
+
     private static SpawnManager m_instance;
     public static SpawnManager Instance
     {
@@ -119,8 +121,10 @@ public class SpawnManager : MonoBehaviour
                 Spawn(pair.Fab, pair.CellIndex);
             }
 
-            GameManager.Instance.CurrentTime += GameManager.Instance.GetTimeIncrement();
-            // TODO: alert UI here
+            var timer = Mathf.FloorToInt(GameManager.Instance.GetTimeIncrement());
+            GameManager.Instance.CurrentTime += timer;
+            if (m_spawnRoutine != null) StopCoroutine(m_spawnRoutine);
+            m_spawnRoutine = StartCoroutine(SpawnTimerIncrement(timer));            
         }
     }
 
@@ -227,6 +231,16 @@ public class SpawnManager : MonoBehaviour
         Destroy(effectObj);
     }
 
+    IEnumerator SpawnTimerIncrement(int timer)
+    {
+        if (timer >= 1)
+        {            
+            GameManager.Instance.TriggerTimerText(timer.ToString(), true);
+            yield return new WaitForSeconds(0.5f);
+            GameManager.Instance.TriggerTimerText(timer.ToString(), false);
+        }
+    }
+
     public void Reset()
     {
         if (m_hoopInstances != null)
@@ -238,6 +252,13 @@ public class SpawnManager : MonoBehaviour
             m_hoopInstances.Clear();
         }
 
+        // spawn again
+        var spawnCount = Random.Range(GameManager.Instance.GetMinSpawnCount(), GameManager.Instance.GetMaxSpawnCount());
+        List<SpawnPair> pairs = Generate(spawnCount);
+        foreach (var pair in pairs)
+        {
+            Spawn(pair.Fab, pair.CellIndex);
+        }
 
         if (m_cellIndices != null)
         {

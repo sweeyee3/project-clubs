@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_gameTimer;
     [SerializeField] private TextMeshProUGUI m_winScore;
     [SerializeField] private TextMeshProUGUI m_loseScore;
+    [SerializeField] private TextMeshProUGUI m_addedTimer;
     [SerializeField] private GameObject m_game;
     [SerializeField] private GameObject m_win;
     [SerializeField] private GameObject m_lose;
@@ -226,6 +227,12 @@ public class GameManager : MonoBehaviour
                 m_gameScore.text = scoreText + "/" + targetScore;
                 break;
         }
+    }
+
+    public void TriggerTimerText(string text, bool isActivate)
+    {
+        m_addedTimer.text = "+" + text + "s";
+        m_addedTimer.gameObject.SetActive(isActivate);
     }
 
     public float GetTimeIncrement()

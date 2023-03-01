@@ -516,7 +516,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 368902131088469271, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 374547533840917179, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
       propertyPath: m_AnchorMax.y
@@ -764,6 +764,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
+--- !u!114 &6046289682634493331 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1570314036153155263, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
+  m_PrefabInstance: {fileID: 6046289682634493330}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8160557920342292600
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -815,6 +826,10 @@ PrefabInstance:
       propertyPath: m_startMenu
       value: 
       objectReference: {fileID: 273808982}
+    - target: {fileID: 8160557920308041833, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
+      propertyPath: m_addedTimer
+      value: 
+      objectReference: {fileID: 6046289682634493331}
     - target: {fileID: 8160557920308041833, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
       propertyPath: m_playButton
       value: 
