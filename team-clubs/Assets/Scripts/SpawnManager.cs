@@ -50,7 +50,7 @@ public class SpawnManager : MonoBehaviour
             }
             return m_instance;
         }
-    }
+    }    
 
     private void Awake()
     {
@@ -288,7 +288,7 @@ public class SpawnManager : MonoBehaviour
         var nz = Mathf.RoundToInt(m_cellSize.z > 0 ? size.z / m_cellSize.z : 5);
 
         return new Vector3(nx, ny, nz);
-    }
+    }    
 
     Vector3 GetStartPosition()
     {
@@ -302,7 +302,7 @@ public class SpawnManager : MonoBehaviour
         if (m_ball != null) startPos = m_ball.InitialPosition;
 
         return startPos + m_offset + m_cellSize / 2 - (new Vector3(m_cellSize.x * (nx / 2), m_cellSize.y * (ny / 2), 0));
-    }
+    }       
     
     public Vector3 GetCellPosition(int x, int y, int z)
     {                   
