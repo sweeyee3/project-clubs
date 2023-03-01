@@ -16,7 +16,7 @@ public class MovingHoop : MonoBehaviour
     public float movingSpeed = 2.0f;
     private void Start()
     {
-        Vector3 gridIndex = GetComponentInChildren<Hoop>().HoopGridIndex;
+        Vector3 gridIndex = GetComponentInChildren<Hoop>().CellIndex;
         Vector3 cellCounts = SpawnManager.Instance.GetCellCounts();
         if (gridIndex.x != 0)
         {

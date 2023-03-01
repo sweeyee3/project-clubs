@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,9 +22,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] private CurveHandler m_curveHandler;
     [SerializeField] private SpawnManager m_spawnManager;
 
-    [Header("Difficulty setttings")]
+    [Header("Score setttings")]
     [SerializeField] private AnimationCurve m_scoreDifficulty;
+    [SerializeField] private AnimationCurve m_setTimeIncrement;
+    [SerializeField] private AnimationCurve m_hoopScoreIncrement;
     [SerializeField] private float m_startTime = 30;
+
+    [Header("Spawn difficulty settings")]    
+    [SerializeField] private AnimationCurve m_minSpawnCount;
+    [SerializeField] private AnimationCurve m_maxSpawnCount;
+
+    [Header("Distance difficulty settings")]
+    [SerializeField] private AnimationCurve m_distanceSpawnProbabilityMin;
+    [SerializeField] private AnimationCurve m_distanceSpawnProbabilityMax;
+    [SerializeField] private AnimationCurve m_distanceRoundSpawnProbability;
+
+    [Header("Spawn type difficulty settings")]
+    [SerializeField] private List<AnimationCurve> m_hoopSpawnProbability;
 
     [Header("UI settings")]
     [SerializeField] private TextMeshProUGUI m_gameScore;
@@ -68,6 +83,18 @@ public class GameManager : MonoBehaviour
         set
         {
             m_currentRound = value;
+        }
+    }
+
+    public float CurrentTime
+    {
+        get
+        {
+            return m_currentTime;
+        }
+        set
+        {
+            m_currentTime = value;
         }
     }
 
@@ -199,6 +226,83 @@ public class GameManager : MonoBehaviour
                 m_gameScore.text = scoreText + "/" + targetScore;
                 break;
         }
+    }
+
+    public float GetTimeIncrement()
+    {
+        return m_setTimeIncrement.Evaluate(CurrentRound);
+    }
+
+    public int GetScore(int distance)
+    {
+        return (int)m_hoopScoreIncrement.Evaluate(distance);
+    }
+
+    public int GetMinSpawnCount()
+    {
+        int minSpawn = (int)m_minSpawnCount.Evaluate(CurrentRound);
+
+        return minSpawn;
+    }
+
+    public int GetMaxSpawnCount()
+    {
+        int maxSpawn = (int)m_maxSpawnCount.Evaluate(CurrentRound);
+
+        return maxSpawn;
+    }
+
+    public int GetDistanceSpawnProbability(int maxDistance, float probability)
+    {
+        int z = 0;
+        float prevProbability = 0;
+        for (int i = 0; i< maxDistance; i++)
+        {
+            var min = m_distanceSpawnProbabilityMin.Evaluate(i);
+            var max = m_distanceSpawnProbabilityMax.Evaluate(i);
+            var interpolater = m_distanceRoundSpawnProbability.Evaluate(CurrentRound);
+
+            var p = Mathf.Lerp(min, max, interpolater);
+            if (probability > prevProbability && probability <= p)
+            {
+                z = i;
+                break;
+            }
+            prevProbability = p;
+        }
+
+        return z;
+    }
+    
+    public Hoop.EHoopType GetSpawnedHoop(float probability)
+    {
+        // pick static first, then pick x then so on and so forth
+        Dictionary<Hoop.EHoopType, float> hoopSpawnProbabilities = new Dictionary<Hoop.EHoopType, float>();
+        float totalProbability = 1;
+        foreach (var e in Enum.GetValues(typeof(Hoop.EHoopType)))
+        {
+            var eHoopType = (Hoop.EHoopType)e;
+            var eValue = m_hoopSpawnProbability[(int)e].Evaluate(CurrentRound);
+
+            if (totalProbability > eValue) hoopSpawnProbabilities[eHoopType] = eValue;
+            else hoopSpawnProbabilities[eHoopType] = totalProbability;
+            totalProbability = Mathf.Clamp(totalProbability - hoopSpawnProbabilities[eHoopType], 0, 1);
+        }
+
+        float prevP = 0;
+        var outKey = Hoop.EHoopType.STATIC;
+        foreach(var k in hoopSpawnProbabilities.Keys)
+        {
+            var p = hoopSpawnProbabilities[k];
+            if (probability > prevP && probability <= p)
+            {
+                outKey = k;
+                break;
+            }
+            prevP = p;
+        }
+
+        return outKey;
     }
 
     public void StartGame()

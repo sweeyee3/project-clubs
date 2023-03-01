@@ -10,9 +10,7 @@ public class Hoop : MonoBehaviour
     public enum EHoopType
     {
         STATIC,
-        MOVE_X,
-        MOVE_Y,
-        MOVE_Z
+        MOVE_X        
     }
 
     [SerializeField] private EHoopType m_hoopType;
@@ -25,20 +23,20 @@ public class Hoop : MonoBehaviour
     [SerializeField] private float m_radius;
     [SerializeField] private float m_inner_radius;
     [SerializeField] private float m_fov;
-    [SerializeField] private LayerMask m_hitMask;
+    [SerializeField] private LayerMask m_hitMask;    
 
-    private Vector3 m_hoopGridIndex;
+    private Vector3 m_cellIndex;
     private CurveHandler m_curveHandler;
 
-    public Vector3 HoopGridIndex
+    public Vector3 CellIndex
     {
         get
         {
-            return m_hoopGridIndex;
+            return m_cellIndex;
         }
         set
         {
-            m_hoopGridIndex = value;
+            m_cellIndex = value;
         }
     }
 
@@ -90,9 +88,10 @@ public class Hoop : MonoBehaviour
 
             if (isWithinRight && isWithinLeft && isWithinBottom && isInsideRadius && isOutsideInnerRadius && isFromTop)
             {                
-                GameManager.Instance.CurrentScore += 1;
+                GameManager.Instance.CurrentScore += GameManager.Instance.GetScore((int)CellIndex.z);
+                // TODO: alert UI here
                 m_curveHandler.Reset(collide.transform.parent.gameObject.GetComponent<Ball>());
-                SpawnManager.Instance.Remove(this);               
+                SpawnManager.Instance.Remove(this, GameManager.Instance.GetScore((int)CellIndex.z));               
             }
         }        
     }

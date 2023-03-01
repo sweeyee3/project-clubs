@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -21,8 +22,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private int m_minSpawnCount = 1;
     [SerializeField] private int m_maxSpawnCount = 5;
 
-    [Header("Spawn Setting")]
-    [SerializeField] private GameObject m_effectPrefab;
+    [SerializeField] private GameObject m_effectPrefab;    
 
     [Header("Grid Settings")]
     [SerializeField] private Vector3 m_cellSize;
@@ -110,13 +110,17 @@ public class SpawnManager : MonoBehaviour
         }
 
         if (m_hoopInstances.Count <= 0)
-        {
-            var spawnCount = Random.Range(m_minSpawnCount, m_maxSpawnCount);
+        {                        
+            var spawnCount = Random.Range(GameManager.Instance.GetMinSpawnCount(), GameManager.Instance.GetMaxSpawnCount());
+
             List<SpawnPair> pairs = Generate(spawnCount);
             foreach (var pair in pairs)
             {
                 Spawn(pair.Fab, pair.CellIndex);
-            }            
+            }
+
+            GameManager.Instance.CurrentTime += GameManager.Instance.GetTimeIncrement();
+            // TODO: alert UI here
         }
     }
 
@@ -128,24 +132,37 @@ public class SpawnManager : MonoBehaviour
 
         var indices = new List<int>();
         var fabs = new List<GameObject>();
-        var shuffledIndices = m_cellIndices;
-        var shuffledFab = m_hoopPrefabs;
-
+        
         while (count >= 0)
         {
-            shuffledIndices = CustomUtility.Shuffle(m_cellIndices); // pick random position
-            shuffledFab = CustomUtility.Shuffle(m_hoopPrefabs); // pick random prefab
+            // pick probabilistic z poisition but randomise y and x
+            var distanceProbability = Random.Range(0.0f, 1.0f);
+            //Vector3 cellCount = GetCellCounts();
+            //int z = GameManager.Instance.GetDistanceSpawnProbability((int)cellCount.z, distanceProbability);
+            //int z = Random.Range(0, (int)cellCount.z);
+            //int y = Random.Range(0, (int)cellCount.y);
+            //int x = Random.Range(0, (int)cellCount.x);
+            var shuffledPositions = CustomUtility.Shuffle(m_cellIndices);
+            var cellIdx = shuffledPositions[0];
+
+            // pick probabilisitc hoop            
+            var hoopProbability = Random.Range(0.0f, 1.0f);
+            var hoopType = GameManager.Instance.GetSpawnedHoop(hoopProbability);
+           
+            //Vector3 cellIdx = new Vector3(x, y, z);            
+            var fab = m_hoopPrefabs.Find(x => x.GetComponentInChildren<Hoop>().HoopType == hoopType);
 
             SpawnPair sp;
-            sp.CellIndex = shuffledIndices[0];
-            sp.Fab = shuffledFab[0];
+            sp.CellIndex = cellIdx;
+            sp.Fab = fab;
             tempSpawnPair.Add(sp);
-
-            shuffledIndices.RemoveAt(0);
-            m_cellIndices = shuffledIndices;
+            
+            m_cellIndices.Remove(cellIdx);
+            
             count--;
         }
 
+        // spawn static stuff first, then spawn other types
         tempSpawnPair = tempSpawnPair.OrderBy(x => x.Fab.GetComponentInChildren<Hoop>().HoopType).ToList();
 
         for (int i=0; i<tempSpawnPair.Count; i++)
@@ -185,26 +202,28 @@ public class SpawnManager : MonoBehaviour
 
         hoopObj.transform.position = GetCellPosition((int)cellIndex.x, (int)cellIndex.y, (int)cellIndex.z);
 
-        hoopInstance.HoopGridIndex = cellIndex;        
+        hoopInstance.CellIndex = cellIndex;        
         m_hoopInstances.Add(hoopInstance);
     }
 
-    public void Remove(Hoop hoop)
+    public void Remove(Hoop hoop, int score)
     {
         // spawn hoop effect here
-        StartCoroutine(SpawnEffect(m_effectPrefab, hoop.transform.parent.position));
+        StartCoroutine(SpawnEffect(m_effectPrefab, hoop.transform.parent.position, score));
         AudioManager.Instance.Play("ballSuccess", AudioManager.EAudioType.SFX);
         CustomUtility.Vibrate();
-        m_cellIndices.Add(hoop.HoopGridIndex);
+        m_cellIndices.Add(hoop.CellIndex);
         m_hoopInstances.Remove(hoop);
         Destroy(hoop.transform.parent.gameObject);
     }
 
-    IEnumerator SpawnEffect(GameObject effect, Vector3 position)
+    IEnumerator SpawnEffect(GameObject effect, Vector3 position, int score)
     {
         var effectObj = Instantiate(effect);
         effectObj.transform.position = position;
-        yield return new WaitForSeconds(0.25f);
+        effectObj.GetComponentInChildren<TextMeshPro>().text = "+" + score.ToString();
+        yield return new WaitForSeconds(0.5f);
+        Debug.Log("effects destroyed");
         Destroy(effectObj);
     }
 
