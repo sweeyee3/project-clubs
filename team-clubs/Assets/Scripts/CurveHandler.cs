@@ -339,6 +339,8 @@ public class CurveHandler : MonoBehaviour
                         if (m_isTapped)
                         {
                             AudioManager.Instance.Play("ballToss", AudioManager.EAudioType.SFX);
+                            //Disables tutorial on release
+                            GameManager.Instance.DisableTutorial();
                             m_currentBall.GetComponent<Ball>().Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);
 
                             // remake ball
@@ -368,7 +370,7 @@ public class CurveHandler : MonoBehaviour
                 GameObject ballObj = Instantiate(m_ballPrefab);
                 m_balls.Add(ballObj.GetComponent<Ball>());
                 ballObj.GetComponent<Ball>().Set(InitialPosition, InitialProjectileVelocity, InitialInputSpeed, m_gravity, m_bounceCount, m_normalizedVelocityReductionFactor, m_normalizedGravityModulation, m_bounceLayerMask);
-                
+                GameManager.Instance.DisableTutorial();
                 m_debugTotalTime = CustomUtility.CalculateProjectileTime(InitialProjectileVelocity, m_gravity);
                 m_normalizedForwardSpeedAdjustment = 0;
                 m_accumulatedVertAngleTime = 0;

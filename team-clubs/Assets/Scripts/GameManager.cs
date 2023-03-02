@@ -54,6 +54,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject m_lose;
     [SerializeField] private GameObject m_pauseMenu;
     [SerializeField] private GameObject m_startMenu;
+    [SerializeField] private GameObject m_tutorial;
     [SerializeField] private Button m_pauseButton;
     [SerializeField] private Button m_playButton;
 
@@ -136,6 +137,8 @@ public class GameManager : MonoBehaviour
 
                         m_pauseButton.gameObject.SetActive(true);
                         m_playButton.gameObject.SetActive(false);
+
+                        m_tutorial.SetActive(!PlayerPrefs.HasKey("tutorial"));                        
 
                         AudioManager.Instance.Play("gameBGM", AudioManager.EAudioType.BGM);
                         AudioManager.Instance.Stop("startBGM", AudioManager.EAudioType.BGM);
@@ -328,6 +331,12 @@ public class GameManager : MonoBehaviour
         Restart();
 
         CurrentGameState = EGameState.GAME;
+    }
+
+    public void DisableTutorial()
+    {
+        m_tutorial.SetActive(false);
+        PlayerPrefs.SetInt("tutorial", 1);
     }
 
     public void NextRound()
