@@ -312,12 +312,13 @@ public class GameManager : MonoBehaviour
         foreach(var k in hoopSpawnProbabilities.Keys)
         {
             var p = hoopSpawnProbabilities[k];
-            if (probability > prevP && probability <= p)
+            if (probability > prevP && probability <= prevP + p )
             {
+                Debug.Log(k + ": " + probability + ", " + p);
                 outKey = k;
                 break;
             }
-            prevP = p;
+            prevP += p;
         }
 
         return outKey;

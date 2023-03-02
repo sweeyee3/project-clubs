@@ -136,7 +136,8 @@ public class SpawnManager : MonoBehaviour
 
         var indices = new List<int>();
         var fabs = new List<GameObject>();
-        
+        var possibleCellIndices = new List<Vector3>(m_cellIndices);
+
         while (count >= 0)
         {
             // pick probabilistic z poisition but randomise y and x
@@ -152,6 +153,8 @@ public class SpawnManager : MonoBehaviour
             // pick probabilisitc hoop            
             var hoopProbability = Random.Range(0.0f, 1.0f);
             var hoopType = GameManager.Instance.GetSpawnedHoop(hoopProbability);
+
+            Debug.Log("hoop type: " + hoopType);
            
             //Vector3 cellIdx = new Vector3(x, y, z);            
             var fab = m_hoopPrefabs.Find(x => x.GetComponentInChildren<Hoop>().HoopType == hoopType);
@@ -169,28 +172,60 @@ public class SpawnManager : MonoBehaviour
         }
 
         // spawn static stuff first, then spawn other types
-        tempSpawnPair = tempSpawnPair.OrderBy(x => x.Fab.GetComponentInChildren<Hoop>().HoopType).ToList();
+        tempSpawnPair = tempSpawnPair.OrderBy(x => x.Fab.GetComponentInChildren<Hoop>().HoopType).ToList();                               
 
         for (int i=0; i<tempSpawnPair.Count; i++)
-        {            
+        {
+            var hoopType = tempSpawnPair[i].Fab.GetComponentInChildren<Hoop>().HoopType;
+            Debug.Log("spawn hoop types: " + hoopType);
+
             // check prefab type to see if can spawn. if cannot, change to static
             switch (tempSpawnPair[i].Fab.GetComponentInChildren<Hoop>().HoopType)
             {
-                case Hoop.EHoopType.STATIC:
-                    SpawnPair pair;
-                    pair.Fab = tempSpawnPair[i].Fab;
-                    pair.CellIndex = tempSpawnPair[i].CellIndex;
-                    spawns.Add(pair);                                       
-                    break;
-                case Hoop.EHoopType.MOVE_X:                    
-                    var item = spawns.Find(x => ((x.CellIndex.z == tempSpawnPair[i].CellIndex.z) && (x.CellIndex.y == tempSpawnPair[i].CellIndex.y) && (x.CellIndex.x == tempSpawnPair[i].CellIndex.x - 1 || x.CellIndex.x == tempSpawnPair[i].CellIndex.x + 1)));                    
+                case Hoop.EHoopType.STATIC:                                       
+                    SpawnPair pairStatic;
+                    if (possibleCellIndices.Contains(tempSpawnPair[i].CellIndex))
+                    {
+                        pairStatic.Fab = tempSpawnPair[i].Fab;
+                        pairStatic.CellIndex = tempSpawnPair[i].CellIndex;
+                        spawns.Add(pairStatic);
 
-                    if (item.Fab == null)
-                    {                        
-                        pair.Fab = tempSpawnPair[i].Fab;
-                        pair.CellIndex = tempSpawnPair[i].CellIndex;
-                        spawns.Add(pair);
-                    }                    
+                        possibleCellIndices.Remove(pairStatic.CellIndex);
+
+                        //Debug.Log("staic cell removed " + pairStatic.CellIndex + ", " + possibleCellIndices.Count);
+                    }
+                    break;
+
+                case Hoop.EHoopType.MOVE_X:
+                case Hoop.EHoopType.MOVE_Y:
+                case Hoop.EHoopType.MOVE_Z:
+                    // TODO: from a list of possible positions, check if all of them are legit. 
+                    // If they are, spawn and remove all the positions that have become not possible because of moving hoop ( use target position )
+
+                    SpawnPair pairMove;
+                    var cellTarget = MovingHoop.GetTargetCellIndex(tempSpawnPair[i].Fab.GetComponentInChildren<Hoop>().HoopType, tempSpawnPair[i].CellIndex, tempSpawnPair[i].Fab.GetComponent<MovingHoop>().MoveUnits);
+                    var cellOriginal = tempSpawnPair[i].CellIndex;
+
+                    if (possibleCellIndices.Contains(cellTarget) && possibleCellIndices.Contains(cellOriginal))
+                    {
+                        pairMove.Fab = tempSpawnPair[i].Fab;
+                        pairMove.CellIndex = tempSpawnPair[i].CellIndex;
+                        spawns.Add(pairMove);
+
+                        possibleCellIndices.Remove(cellTarget);
+                        possibleCellIndices.Remove(cellOriginal);
+
+                        //Debug.Log("move cell removed: " + cellOriginal + ", " + cellTarget + ", " + possibleCellIndices.Count);
+                    }
+
+                    //var item = spawns.Find(x => ((x.CellIndex.z == tempSpawnPair[i].CellIndex.z) && (x.CellIndex.y == tempSpawnPair[i].CellIndex.y) && (x.CellIndex.x == tempSpawnPair[i].CellIndex.x - 1 || x.CellIndex.x == tempSpawnPair[i].CellIndex.x + 1)));                    
+
+                    //if (item.Fab == null)
+                    //{                        
+                    //    pair.Fab = tempSpawnPair[i].Fab;
+                    //    pair.CellIndex = tempSpawnPair[i].CellIndex;
+                    //    spawns.Add(pair);
+                    //}                    
                     break;
             }
             

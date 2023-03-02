@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3248292207736956314, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
       propertyPath: m_Name
-      value: HoopMove
+      value: HoopMoveY
       objectReference: {fileID: 0}
     - target: {fileID: 3248292207736956315, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
       propertyPath: m_RootOrder
@@ -57,10 +57,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3248292209150866854, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
       propertyPath: m_hoopType
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
+--- !u!114 &5447783780776685553 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3248292209150866854, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
+  m_PrefabInstance: {fileID: 7389891257420421719}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2dbecc31cdb5974082c55a2e0c3fb68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5447783782207438797 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3248292207736956314, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
@@ -78,5 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a25c0f511f677147aca3e811ea37774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  posThreshold: 0.5
-  movingSpeed: 2
+  m_hoop: {fileID: 5447783780776685553}
+  m_posThreshold: 0.1
+  m_moveUnits: 1
+  m_moveSpeed: 2

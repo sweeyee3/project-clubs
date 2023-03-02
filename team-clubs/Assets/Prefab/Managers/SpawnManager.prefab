@@ -56,4 +56,7 @@ MonoBehaviour:
   m_hoopPrefabs:
   - {fileID: 3248292207736956314, guid: a4a15be0e3129724aae5eb0f806ee32d, type: 3}
   - {fileID: 5447783782207438797, guid: 006d8b5e3ca46fe448b0b99aae9e0e4b, type: 3}
+  - {fileID: 5447783782207438797, guid: b3b0cccec9e50e74d946fae6fe51f9fc, type: 3}
+  - {fileID: 5447783782207438797, guid: 1c13082ab89f46b46930ef30aa54658a, type: 3}
   m_isDisplaySpawnGrid: 1
+  m_cellIndices: []
