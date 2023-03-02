@@ -457,6 +457,8 @@ public class CurveHandler : MonoBehaviour
         var index = 0;
 
         var stoppedVelocity = InitialProjectileVelocity;
+        var stoppedPosition = tempPos;
+        var isStopped = false;
 
         while (t > 0)
         {
@@ -470,11 +472,15 @@ public class CurveHandler : MonoBehaviour
             if (m_lineShowTarget)
             {
                 RaycastHit tSignHit;
-                if (Physics.Raycast(tempPos, intermediateVelocity, out tSignHit, intermediateVelocity.magnitude, m_lineTargetMask))
+                if (Physics.Raycast(tempPos - intermediateVelocity, intermediateVelocity, out tSignHit, intermediateVelocity.magnitude, m_lineTargetMask))
                 {
                     stoppedVelocity = intermediateVelocity;
+                    stoppedPosition = tempPos - intermediateVelocity;
+                    isStopped = true;
                     break;
                 }
+
+                stoppedPosition = tempPos;
             }
 
             m_lineTarget.transform.gameObject.SetActive(false);
@@ -490,14 +496,17 @@ public class CurveHandler : MonoBehaviour
 
         if (m_lineShowTarget)
         {
-            var totalTime = CustomUtility.CalculateProjectileTime(stoppedVelocity, m_gravity);
-            var vy = stoppedVelocity.y + (m_gravity.y * totalTime);
-            var vx = stoppedVelocity.x;
-
-            var v = m_isXDirectionForward ? new Vector3(0, vy, vx) : new Vector3(vx, vy, 0);
+            var v = stoppedVelocity;
+            if (!isStopped)
+            {
+                var totalTime = CustomUtility.CalculateProjectileTime(stoppedVelocity, m_gravity);
+                var vy = stoppedVelocity.y + (m_gravity.y * totalTime);
+                var vx = stoppedVelocity.x;
+                v = m_isXDirectionForward ? new Vector3(0, vy, vx) : new Vector3(vx, vy, 0);
+            }
         
             RaycastHit targetSignHit;
-            if (Physics.Raycast(tempPos, v, out targetSignHit, 99, m_lineTargetMask))
+            if (Physics.Raycast(stoppedPosition, v, out targetSignHit, 99, m_lineTargetMask))
             {
                 m_lineTarget.transform.gameObject.SetActive(true);
                 m_lineTarget.transform.position = targetSignHit.point + m_lineTargetOffset;

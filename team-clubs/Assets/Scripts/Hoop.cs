@@ -14,7 +14,8 @@ public class Hoop : MonoBehaviour
     }
 
     [SerializeField] private EHoopType m_hoopType;
-    [SerializeField] private float m_hoopSuccess = 0.5f;    
+    [SerializeField] private float m_hoopSuccess = 0.5f;
+    [SerializeField] private Transform m_target;
 
     [SerializeField] private Vector3 m_boxSize;
     [SerializeField] private Vector3 m_boxOffset;
@@ -82,16 +83,21 @@ public class Hoop : MonoBehaviour
             bool isWithinTop = CrossSign(ovTop.normalized, topVector, transform.right) < 0;
             bool isInsideRadius = IsInsideCylinderRadius(transform.position, collide.transform.position, norm, m_radius);
             bool isOutsideInnerRadius = !IsInsideCylinderRadius(transform.position, collide.transform.position, norm, m_inner_radius);
-            bool isFromTop = IsFromTop(collide.transform.parent.gameObject.GetComponent<Ball>().CurrentVelocity.normalized, m_hoopSuccess);
+            bool isFromTop = IsFromTop(collide.transform.parent.gameObject.GetComponent<Ball>().transform.position, m_target.position, m_hoopSuccess);
 
-            //Debug.Log(isWithinRight + ", " + isWithinLeft + ", " + isWithinBottom + ", " + isWithinTop + ", " + isInsideRadius + ", " + isOutsideInnerRadius + ", " + isFromTop);            
+            if (isWithinRight && isWithinLeft && isWithinBottom && isInsideRadius && isOutsideInnerRadius)
+            {
+                //var dot = Vector3.Dot(collide.transform.parent.gameObject.GetComponent<Ball>().CurrentVelocity.normalized, -transform.up);
+                //Debug.Log("dot: " + dot);
+                Debug.Log(isWithinRight + ", " + isWithinLeft + ", " + isWithinBottom + ", " + isWithinTop + ", " + isInsideRadius + ", " + isOutsideInnerRadius + ", " + isFromTop);
+            }
 
             if (isWithinRight && isWithinLeft && isWithinBottom && isInsideRadius && isOutsideInnerRadius && isFromTop)
-            {                
+            {
                 GameManager.Instance.CurrentScore += GameManager.Instance.GetScore((int)CellIndex.z);
                 // TODO: alert UI here
                 m_curveHandler.Reset(collide.transform.parent.gameObject.GetComponent<Ball>());
-                SpawnManager.Instance.Remove(this, GameManager.Instance.GetScore((int)CellIndex.z));               
+                SpawnManager.Instance.Remove(this, GameManager.Instance.GetScore((int)CellIndex.z));
             }
         }        
     }
@@ -110,8 +116,18 @@ public class Hoop : MonoBehaviour
     }
 
     private bool IsFromTop(Vector3 otherDir, float success)
-    {        
-        var dot = Vector3.Dot(otherDir.normalized, -transform.up);        
+    {
+        var dot = Vector3.Dot(otherDir.normalized, -transform.up); // this is to find how close to normal it is        
+        //var cross = Vector3.Cross(otherDir.normalized, -transform.forward);
+        //var dot = Vector3.Dot(cross, -transform.right);        
+
+        return dot > success;
+    }
+
+    private bool IsFromTop(Vector3 otherPosition, Vector3 targetPoint, float success)
+    {
+        var direction = targetPoint - otherPosition;
+        var dot = Vector3.Dot(direction.normalized, -transform.up);        
 
         return dot > success;
     }
