@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using TMPro;
 using System;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -139,6 +140,7 @@ public class GameManager : MonoBehaviour
                         m_playButton.gameObject.SetActive(false);
 
                         m_tutorial.SetActive(!PlayerPrefs.HasKey("tutorial"));                        
+                        m_tutorial.transform.Find("TapIn").GetComponent<DOTweenAnimation>().DOPlay();
 
                         AudioManager.Instance.Play("gameBGM", AudioManager.EAudioType.BGM);
                         AudioManager.Instance.Stop("startBGM", AudioManager.EAudioType.BGM);

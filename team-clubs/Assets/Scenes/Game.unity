@@ -299,6 +299,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1306782394 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3489342955257756105, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
+  m_PrefabInstance: {fileID: 6046289682634493330}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1640556926 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6046289684257121516, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
@@ -619,6 +624,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PauseMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 3489342955257756105, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3566532320722065868, guid: a4753875f1ce3ea42ad04f6ea23b1ed4, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -839,6 +848,10 @@ PrefabInstance:
       propertyPath: m_pause
       value: 
       objectReference: {fileID: 1086583539}
+    - target: {fileID: 8160557920308041833, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
+      propertyPath: m_tutorial
+      value: 
+      objectReference: {fileID: 1306782394}
     - target: {fileID: 8160557920308041833, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
       propertyPath: m_winScore
       value: 
