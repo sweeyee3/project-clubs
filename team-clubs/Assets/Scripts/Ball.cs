@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Ball : MonoBehaviour
 {        
@@ -130,6 +131,10 @@ public class Ball : MonoBehaviour
 
                     isProjectile = false;
                     AudioManager.Instance.Play("ballHitBoard", AudioManager.EAudioType.SFX);
+
+                    var board = info.collider.gameObject;
+                    board.transform.parent.GetComponentInChildren<DOTweenAnimation>().DOPlayForward();
+
                 }
                 tempBounceCount--;                
             }
