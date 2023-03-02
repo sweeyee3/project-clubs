@@ -154,9 +154,7 @@ public class SpawnManager : MonoBehaviour
 
             // pick probabilisitc hoop            
             var hoopProbability = Random.Range(0.0f, 1.0f);
-            var hoopType = GameManager.Instance.GetSpawnedHoop(hoopProbability);
-
-            Debug.Log("hoop type: " + hoopType);
+            var hoopType = GameManager.Instance.GetSpawnedHoop(hoopProbability);            
            
             //Vector3 cellIdx = new Vector3(x, y, z);            
             var fab = m_hoopPrefabs.Find(x => x.GetComponentInChildren<Hoop>().HoopType == hoopType);
@@ -178,8 +176,7 @@ public class SpawnManager : MonoBehaviour
 
         for (int i=0; i<tempSpawnPair.Count; i++)
         {
-            var hoopType = tempSpawnPair[i].Fab.GetComponentInChildren<Hoop>().HoopType;
-            Debug.Log("spawn hoop types: " + hoopType);
+            var hoopType = tempSpawnPair[i].Fab.GetComponentInChildren<Hoop>().HoopType;            
 
             // check prefab type to see if can spawn. if cannot, change to static
             switch (tempSpawnPair[i].Fab.GetComponentInChildren<Hoop>().HoopType)
@@ -195,6 +192,10 @@ public class SpawnManager : MonoBehaviour
                         possibleCellIndices.Remove(pairStatic.CellIndex);
 
                         //Debug.Log("staic cell removed " + pairStatic.CellIndex + ", " + possibleCellIndices.Count);
+                    }
+                    else
+                    {
+                        m_cellIndices.Add(tempSpawnPair[i].CellIndex);
                     }
                     break;
 
@@ -218,6 +219,10 @@ public class SpawnManager : MonoBehaviour
                         possibleCellIndices.Remove(cellOriginal);
 
                         //Debug.Log("move cell removed: " + cellOriginal + ", " + cellTarget + ", " + possibleCellIndices.Count);
+                    }
+                    else
+                    {
+                        m_cellIndices.Add(tempSpawnPair[i].CellIndex);
                     }
 
                     //var item = spawns.Find(x => ((x.CellIndex.z == tempSpawnPair[i].CellIndex.z) && (x.CellIndex.y == tempSpawnPair[i].CellIndex.y) && (x.CellIndex.x == tempSpawnPair[i].CellIndex.x - 1 || x.CellIndex.x == tempSpawnPair[i].CellIndex.x + 1)));                    
