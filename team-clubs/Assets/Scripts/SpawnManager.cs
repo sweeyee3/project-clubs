@@ -148,6 +148,8 @@ public class SpawnManager : MonoBehaviour
             //int y = Random.Range(0, (int)cellCount.y);
             //int x = Random.Range(0, (int)cellCount.x);
             var shuffledPositions = CustomUtility.Shuffle(m_cellIndices);
+            if (shuffledPositions.Count <= 0) break;
+
             var cellIdx = shuffledPositions[0];
 
             // pick probabilisitc hoop            
