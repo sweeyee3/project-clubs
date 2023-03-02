@@ -10,7 +10,9 @@ public class Hoop : MonoBehaviour
     public enum EHoopType
     {
         STATIC,
-        MOVE_X        
+        MOVE_X,
+        MOVE_Y,
+        MOVE_Z
     }
 
     [SerializeField] private EHoopType m_hoopType;

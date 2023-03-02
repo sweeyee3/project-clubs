@@ -182,7 +182,10 @@ public class SpawnManager : MonoBehaviour
                     pair.CellIndex = tempSpawnPair[i].CellIndex;
                     spawns.Add(pair);                                       
                     break;
-                case Hoop.EHoopType.MOVE_X:                    
+                case Hoop.EHoopType.MOVE_X:
+                    // TODO: from a list of possible positions, check if all of them are legit. 
+                    // If they are, spawn and remove all the positions that have become not possible because of moving hoop ( use target position )
+
                     var item = spawns.Find(x => ((x.CellIndex.z == tempSpawnPair[i].CellIndex.z) && (x.CellIndex.y == tempSpawnPair[i].CellIndex.y) && (x.CellIndex.x == tempSpawnPair[i].CellIndex.x - 1 || x.CellIndex.x == tempSpawnPair[i].CellIndex.x + 1)));                    
 
                     if (item.Fab == null)

@@ -1023,10 +1023,6 @@ PrefabInstance:
       propertyPath: m_ball
       value: 
       objectReference: {fileID: 5646418928101412809}
-    - target: {fileID: 8160557920724105365, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
-      propertyPath: m_hoopPrefabs.Array.data[1]
-      value: 
-      objectReference: {fileID: 5447783782207438797, guid: 006d8b5e3ca46fe448b0b99aae9e0e4b, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7cce2ec641bd2bd43a1466e37a018a17, type: 3}
 --- !u!1001 &8724513315696681138
